@@ -84,15 +84,12 @@ var gameScene = {
         targetX: randomInteger(0, columnCount - 1),
         targetY: randomInteger(0, rowCount - 1),
         container: new PIXI.Container(),
-        laneOffsetContainer: new PIXI.Container(),
       }
 
       car.container.x = car.x * TILE_SIZE
       car.container.y = car.y * TILE_SIZE
 
-      car.laneOffsetContainer.addChild(new PIXI.Sprite(PIXI.loader.resources['person'].texture))
-
-      car.container.addChild(car.laneOffsetContainer)
+      car.container.addChild(new PIXI.Sprite(PIXI.loader.resources['person'].texture))
 
       cars.push(car)
 
@@ -129,7 +126,7 @@ var gameScene = {
 
       if (car.path && car.path.length) {
         var nextTileInPath = car.path[0]
-        var speed = 0.5
+        var speed = 1
 
         var dx = nextTileInPath.x * TILE_SIZE - car.container.x
         var dy = nextTileInPath.y * TILE_SIZE - car.container.y
@@ -139,36 +136,6 @@ var gameScene = {
         // set position
         car.container.x += Math.cos(angle) * speed
         car.container.y += Math.sin(angle) * speed
-
-        // lane offsets
-        var laneOffsetX = 0
-        var laneOffsetY = 0
-
-        console.log(angle)
-        angle = normalizeRange.wrap(0, Math.PI * 2, angle)
-
-        if (normalizeRange.test(0, 0.01, angle) || normalizeRange.test(Math.PI * 2 - 0.01, Math.PI * 2, angle)) {
-          laneOffsetY = TILE_SIZE / 2
-          console.log('RIGHT', angle)
-
-        } else if (normalizeRange.test(Math.PI * 0.5 - 0.01, Math.PI * 0.5 + 0.01, angle)) {
-          laneOffsetX = -TILE_SIZE / 2
-          console.log('DOWN', angle)
-
-        } else if (normalizeRange.test(Math.PI * 1 - 0.01, Math.PI * 1 + 0.01, angle)) {
-          laneOffsetY = -TILE_SIZE / 2
-          console.log('LEFT', angle)
-
-        } else if (normalizeRange.test(Math.PI * 1.5 - 0.01, Math.PI * 1.5 + 0.01, angle)) {
-          laneOffsetX = -TILE_SIZE / 2
-          console.log('UP', angle)
-
-        } else {
-          console.log(angle)
-        }
-
-        car.laneOffsetContainer.x = laneOffsetX
-        car.laneOffsetContainer.y = laneOffsetY
 
         // continue path
         var distance = Math.sqrt(dx * dx + dy * dy)
