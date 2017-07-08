@@ -5,13 +5,13 @@ var loadingScene = {
   create: function (sceneParams) {
 
     // fetch assets
-    // PIXI.loader
+    PIXI.loader
 
-    // .add('marker', 'assets/images/marker.png')
+    .add('forest_1', 'assets/images/forest_1.png')
     
-    // .load(function () {
-      // this.changeScene(localStorage.scene || 'gameScene', sceneParams)
-    // }.bind(this))
+    .load(function () {
+      this.changeScene('gameScene', sceneParams)
+    }.bind(this))
   },
   destroy: function () {
 
