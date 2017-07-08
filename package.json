@@ -30,7 +30,6 @@
     "local-preferences": "^2.1.2",
     "obscen": "^0.x",
     "pixi.js": "^4.2.2",
-    "screen-orientation": "^1.0.3",
     "window-load": "^1.0.0"
   }
 }
