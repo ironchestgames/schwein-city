@@ -1,6 +1,6 @@
 
 var gameVars = {}
 
-gameVars.TERRAIN_FOREST = 'TERRAIN_FOREST'
+gameVars.TERRAIN_FOREST = 1
 
 module.exports = gameVars

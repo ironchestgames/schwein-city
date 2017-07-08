@@ -8,6 +8,7 @@ var loadingScene = {
     PIXI.loader
 
     .add('forest_1', 'assets/images/forest_1.png')
+    .add('person', 'assets/images/person.png')
     
     .load(function () {
       this.changeScene('gameScene', sceneParams)
