@@ -1,0 +1,36 @@
+{
+  "name": "schwein-city",
+  "version": "1.0.0-0",
+  "description": "HTML5 PixiJS game template, ready with beefy and publish to github script",
+  "main": "src/js/index.js",
+  "scripts": {
+    "init:dirs": "mkdir -p src/js src/lib assets/images assetsources",
+    "init:gitignore": "echo \"node_modules/\nnpm-debug.log\ndist/\" > .gitignore",
+    "create-dist-dirs": "mkdir -p dist/js && mkdir -p dist/assets/images",
+    "copy-assets": "cp -r assets/* dist/assets/",
+    "prebuild": "rm -rf dist/ && npm run create-dist-dirs && npm run copy-assets && cp src/index.html dist/index.html",
+    "build": "browserify src/js/index.js -u src/js/DebugConsole.js -o dist/js/bundle.js",
+    "build:gh": "npm run build && rm -rf docs && mkdir -p docs && cp -r dist/* docs/",
+    "export:version-js": "ver=`node -pe \"require('./package.json').version\"` && echo \"module.exports = \\\"$ver\"\\\" > src/js/version.js",
+    "dev": "beefy src/js/index.js:js/bundle.js 1234 --index=src/index.html",
+    "init": "npm run init:gitignore && npm run init:dirs",
+    "version": "npm run export:version-js && npm run build:gh && git add -A"
+  },
+  "author": "Schwein Studios",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "beefy": "^2.1.8",
+    "browserify": "^13.1.1"
+  },
+  "dependencies": {
+    "browser-game-loop": "^1.4.0",
+    "console.js": "^1.1.0",
+    "debug": "^2.6.1",
+    "easystarjs": "^0.3.1",
+    "local-preferences": "^2.1.2",
+    "obscen": "^0.x",
+    "pixi.js": "^4.2.2",
+    "screen-orientation": "^1.0.3",
+    "window-load": "^1.0.0"
+  }
+}
