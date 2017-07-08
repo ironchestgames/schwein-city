@@ -41,6 +41,169 @@ var isTileTerrainOfType = function (tile, terrainType) {
   return false
 }
 
+var updateRoadTile = function (tile) {
+  var c = tile.x
+  var r = tile.y
+  var c2 = c * 2
+  var r2 = r * 2
+  var isTileRightRoad = isTileTerrainOfType(getTile(c + 1, r), gameVars.TERRAIN_ROAD)
+  var isTileDownRoad = isTileTerrainOfType(getTile(c, r + 1), gameVars.TERRAIN_ROAD)
+  var isTileLeftRoad = isTileTerrainOfType(getTile(c - 1, r), gameVars.TERRAIN_ROAD)
+  var isTileUpRoad = isTileTerrainOfType(getTile(c, r - 1), gameVars.TERRAIN_ROAD)
+
+  // turnaround - exit to the right
+  if (isTileRightRoad &&
+      !isTileDownRoad &&
+      !isTileLeftRoad &&
+      !isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+  // turnaround - exit to the left
+  } else if (!isTileRightRoad &&
+      !isTileDownRoad &&
+      isTileLeftRoad &&
+      !isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+  // turnaround - exit to the top
+  } else if (!isTileRightRoad &&
+      !isTileDownRoad &&
+      !isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+  // turnaround - exit to the bottom
+  } else if (!isTileRightRoad &&
+      isTileDownRoad &&
+      !isTileLeftRoad &&
+      !isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
+
+  // straight horizontal
+  } else if (isTileRightRoad &&
+      !isTileDownRoad &&
+      isTileLeftRoad &&
+      !isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+  // straight vertical
+  } else if (!isTileRightRoad &&
+      isTileDownRoad &&
+      !isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
+
+  // turn, exits: left + down
+  } else if (!isTileRightRoad &&
+      isTileDownRoad &&
+      isTileLeftRoad &&
+      !isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
+
+  // turn, exits: left + up
+  } else if (!isTileRightRoad &&
+      !isTileDownRoad &&
+      isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+  // turn, exits: right + down
+  } else if (isTileRightRoad &&
+      isTileDownRoad &&
+      !isTileLeftRoad &&
+      !isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
+
+  // turn, exits: right + up
+  } else if (isTileRightRoad &&
+      !isTileDownRoad &&
+      !isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+  // T-cross, horizontal + down
+  } else if (isTileRightRoad &&
+      isTileDownRoad &&
+      isTileLeftRoad &&
+      !isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT, Easystarjs.BOTTOM])
+
+  // T-cross, horizontal + up
+  } else if (isTileRightRoad &&
+      !isTileDownRoad &&
+      isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT, Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+  // T-cross, vertical + right
+  } else if (isTileRightRoad &&
+      isTileDownRoad &&
+      !isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP, Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM, Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
+
+  // T-cross, vertical + left
+  } else if (!isTileRightRoad &&
+      isTileDownRoad &&
+      isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP, Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP, Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
+
+  // X-cross
+  } else if (isTileRightRoad &&
+      isTileDownRoad &&
+      isTileLeftRoad &&
+      isTileUpRoad) {
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP, Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM, Easystarjs.RIGHT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP, Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
+
+  }
+}
+
 var gameScene = {
   name: 'gameScene',
   create: function (sceneParams) {
@@ -116,177 +279,7 @@ var gameScene = {
         easystarGrid[r * 2 + 1][c * 2 + 1] = tile.terrain
 
         if (tile.terrain === gameVars.TERRAIN_ROAD) {
-          var isTileRightRoad = isTileTerrainOfType(getTile(c + 1, r), gameVars.TERRAIN_ROAD)
-          var isTileDownRoad = isTileTerrainOfType(getTile(c, r + 1), gameVars.TERRAIN_ROAD)
-          var isTileLeftRoad = isTileTerrainOfType(getTile(c - 1, r), gameVars.TERRAIN_ROAD)
-          var isTileUpRoad = isTileTerrainOfType(getTile(c, r - 1), gameVars.TERRAIN_ROAD)
-
-          // turnaround - exit to the right
-          if (isTileRightRoad &&
-              !isTileDownRoad &&
-              !isTileLeftRoad &&
-              !isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT])
-            console.log(c, r)
-
-          // turnaround - exit to the left
-          } else if (!isTileRightRoad &&
-              !isTileDownRoad &&
-              isTileLeftRoad &&
-              !isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT])
-            console.log(c, r)
-
-          // turnaround - exit to the top
-          } else if (!isTileRightRoad &&
-              !isTileDownRoad &&
-              !isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT])
-            console.log(c, r)
-
-          // turnaround - exit to the bottom
-          } else if (!isTileRightRoad &&
-              isTileDownRoad &&
-              !isTileLeftRoad &&
-              !isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.BOTTOM])
-            console.log(c, r)
-
-          // straight horizontal
-          } else if (isTileRightRoad &&
-              !isTileDownRoad &&
-              isTileLeftRoad &&
-              !isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT])
-            console.log(c, r)
-
-          // straight vertical
-          } else if (!isTileRightRoad &&
-              isTileDownRoad &&
-              !isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.BOTTOM])
-            console.log(c, r)
-
-          // turn, exits: left + down
-          } else if (!isTileRightRoad &&
-              isTileDownRoad &&
-              isTileLeftRoad &&
-              !isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.BOTTOM])
-            console.log(c, r)
-
-          // turn, exits: left + up
-          } else if (!isTileRightRoad &&
-              !isTileDownRoad &&
-              isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT])
-            console.log(c, r)
-
-          // turn, exits: right + down
-          } else if (isTileRightRoad &&
-              isTileDownRoad &&
-              !isTileLeftRoad &&
-              !isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.BOTTOM])
-            console.log(c, r)
-
-          // turn, exits: right + up
-          } else if (isTileRightRoad &&
-              !isTileDownRoad &&
-              !isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT])
-            console.log(c, r)
-
-          // T-cross, horizontal + down
-          } else if (isTileRightRoad &&
-              isTileDownRoad &&
-              isTileLeftRoad &&
-              !isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT, Easystarjs.BOTTOM])
-            console.log(c, r)
-
-          // T-cross, horizontal + up
-          } else if (isTileRightRoad &&
-              !isTileDownRoad &&
-              isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.RIGHT, Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.LEFT])
-            console.log(c, r)
-
-          // T-cross, vertical + right
-          } else if (isTileRightRoad &&
-              isTileDownRoad &&
-              !isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.TOP, Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM, Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
-            console.log(c, r)
-
-          // T-cross, vertical + left
-          } else if (!isTileRightRoad &&
-              isTileDownRoad &&
-              isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.TOP, Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP, Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
-            console.log(c, r)
-
-          // X-cross
-          } else if (isTileRightRoad &&
-              isTileDownRoad &&
-              isTileLeftRoad &&
-              isTileUpRoad) {
-            easystar.setDirectionalCondition(c * 2, r * 2, [Easystarjs.TOP, Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2, [Easystarjs.BOTTOM, Easystarjs.RIGHT])
-            easystar.setDirectionalCondition(c * 2, r * 2 + 1, [Easystarjs.TOP, Easystarjs.LEFT])
-            easystar.setDirectionalCondition(c * 2 + 1, r * 2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
-            console.log(c, r)
-
-          }
+          updateRoadTile(tile)
 
         }
 
@@ -324,16 +317,13 @@ var gameScene = {
     cars = []
 
     // add cars NOTE: test
-    for (var i = 0; i < 1; i++) {
+    for (var i = 0; i < 10; i++) {
       var car = {
-        // x: randomInteger(0, columnCount * 2 - 1),
-        // y: randomInteger(0, rowCount * 2 - 1),
-        x: 3,
-        y: 5,
-        // targetX: randomInteger(0, columnCount * 2 - 1),
-        // targetY: randomInteger(0, rowCount * 2 - 1),
-        targetX: 0,
-        targetY: 2,
+        x: randomInteger(0, columnCount * 2 - 1),
+        y: randomInteger(0, rowCount * 2 - 1),
+        targetX: randomInteger(0, columnCount * 2 - 1),
+        targetY: randomInteger(0, rowCount * 2 - 1),
+        speed: 0.5 + randomInteger(1, 10) / 10,
         container: new PIXI.Container(),
       }
 
@@ -373,7 +363,7 @@ var gameScene = {
 
       if (car.path && car.path.length) {
         var nextTileInPath = car.path[0]
-        var speed = 0.5
+        var speed = car.speed
 
         var dx = nextTileInPath.x / 2 * TILE_SIZE - car.container.x
         var dy = nextTileInPath.y / 2 * TILE_SIZE - car.container.y

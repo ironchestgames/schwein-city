@@ -473,11 +473,11 @@ EasyStar.js = function() {
             var directionIncluded = function () {
                 for (var i = 0; i < directionalCondition.length; i++) {
                     if (directionalCondition[i] === direction) {
-                        console.log('found direction', direction)
+                        // console.log('found direction', direction)
                         return true
                     }
                 }
-                console.log('not found direction', direction)
+                // console.log('not found direction', direction)
                 return false
             }
             if (!directionIncluded()) return false
