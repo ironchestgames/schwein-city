@@ -661,7 +661,7 @@ var gameScene = {
 
             // people definition
             tile.people.push({
-              tile: tile,
+              homeTile: tile,
               happiness: 0
             })
           }
