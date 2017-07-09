@@ -44,8 +44,11 @@ var loadingScene = {
     .add('sc_house_small_03', 'assets/images/sc_house_small_03.png')
 
     .add('sc_house_01_2lev', 'assets/images/sc_house_01_2lev.png')
-
     .add('sc_house_01_4lev', 'assets/images/sc_house_01_4lev.png')
+    .add('sc_house_01_6lev', 'assets/images/sc_house_01_6lev.png')
+
+    .add('sc_industry_01', 'assets/images/sc_industry_01.png')
+    .add('sc_industry_02', 'assets/images/sc_industry_02.png')
 
     .add('gridpoint', 'assets/images/gridpoint.png')
 
