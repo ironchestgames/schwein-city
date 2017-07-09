@@ -365,6 +365,7 @@ var gameScene = {
     // create all pixi containers
     container = new PIXI.Container()
     worldContainer = new PIXI.Container()
+    terrainContainer = new PIXI.Container()
     tileContainer = new PIXI.Container()
     carsContainer = new PIXI.Container()
     pathGridContainer = new PIXI.Container()
@@ -380,9 +381,10 @@ var gameScene = {
 
     // layer order
     worldContainer.addChild(markerContainer)
+    worldContainer.addChild(terrainContainer)
+    worldContainer.addChild(carsContainer)
     worldContainer.addChild(tileContainer)
     worldContainer.addChild(pathGridContainer)
-    worldContainer.addChild(carsContainer)
 
     container.addChild(worldContainer)
     container.addChild(inputContainer)
@@ -553,6 +555,8 @@ var gameScene = {
         tile.zone = null
         tile.building = null
         tile.terrain = gameVars.TERRAIN_ROAD
+        tileContainer.removeChild(tile.container)
+        terrainContainer.addChild(tile.container)
         updateRoadTile(tile)
 
         updateAdjacentTiles(tile)
@@ -629,6 +633,8 @@ var gameScene = {
               easystarGrid[r * 2][c * 2 + 1] = tile.terrain
               easystarGrid[r * 2 + 1][c * 2] = tile.terrain
               easystarGrid[r * 2 + 1][c * 2 + 1] = tile.terrain
+              tileContainer.removeChild(tile.container)
+              terrainContainer.addChild(tile.container)
               updateRoadTile(tile)
               updateAdjacentTiles(tile)
 
