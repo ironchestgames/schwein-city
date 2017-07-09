@@ -621,13 +621,13 @@ var gameScene = {
     easystar.setGrid(easystarGrid)
     
     // add cars NOTE: test
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 1; i++) {
       var car = {
         // x: randomInteger(0, columnCount * 2 - 1),
         // y: randomInteger(0, rowCount * 2 - 1),
         // targetX: randomInteger(0, columnCount * 2 - 1),
         // targetY: randomInteger(0, rowCount * 2 - 1),
-        x: 0,
+        x: 1,
         y: 0,
         targetX: 1,
         targetY: 1,
@@ -735,7 +735,7 @@ var gameScene = {
     allTiles((tile) => {
       calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(2)])
-      calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02'][randomInteger(1)])
+      calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03'][randomInteger(2)])
     })
   },
   draw: function () {

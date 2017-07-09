@@ -49,6 +49,7 @@ var loadingScene = {
 
     .add('sc_industry_01', 'assets/images/sc_industry_01.png')
     .add('sc_industry_02', 'assets/images/sc_industry_02.png')
+    .add('sc_industry_03', 'assets/images/sc_industry_03.png')
 
     .add('gridpoint', 'assets/images/gridpoint.png')
 
