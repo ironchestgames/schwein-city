@@ -638,8 +638,14 @@ var gameScene = {
     })
     toolsWindowContainer.addChild(buttonSelection)
 
-    bnpText = new PIXI.Text(" BNP: -", {fontFamily : 'Helvetica', fontSize: 11, fill : 0xf8f8f8 })
-    bnpText.y = buttonSelection.height * 5
+    var bnpLabel = new PIXI.Text("BNP:", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
+    bnpLabel.x = 5
+    bnpLabel.y = buttonSelection.height * 5
+    toolsWindowContainer.addChild(bnpLabel)
+
+    bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
+    bnpText.x = 5
+    bnpText.y = buttonSelection.height * 5 + 10
     toolsWindowContainer.addChild(bnpText)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
@@ -852,7 +858,7 @@ var gameScene = {
     bnp = Math.max(0, bnp - BNP_GLOBAL_DEDUCTION)
 
     // Update BNP text
-    bnpText.text = " BNP: " + (Math.round(bnp * 100) / 100)
+    bnpText.text = (Math.round(bnp * 100) / 100)
   },
   draw: function () {
     global.renderer.render(container)
