@@ -68,6 +68,7 @@ var loadingScene = {
     .add('sc_industry_05', 'assets/images/sc_industry_05.png')
 
     .add('gridpoint', 'assets/images/gridpoint.png')
+    .add('gridedge', 'assets/images/gridedge.png')
 
     .load(function () {
       this.changeScene('gameScene', sceneParams)

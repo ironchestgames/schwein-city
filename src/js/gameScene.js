@@ -378,6 +378,7 @@ var gameScene = {
     tileContainer = new PIXI.Container()
     carsContainer = new PIXI.Container()
     pathGridContainer = new PIXI.Container()
+    latestPathsContainer = new PIXI.Container()
     markerContainer = new PIXI.Container()
     inputContainer = new PIXI.Container()
     toolsWindowContainer = new PIXI.Container()
@@ -392,6 +393,7 @@ var gameScene = {
     worldContainer.addChild(markerContainer)
     worldContainer.addChild(terrainContainer)
     worldContainer.addChild(carsContainer)
+    worldContainer.addChild(latestPathsContainer)
     worldContainer.addChild(tileContainer)
     worldContainer.addChild(pathGridContainer)
 
@@ -405,6 +407,10 @@ var gameScene = {
     // offset the cars
     carsContainer.x = TILE_SIZE / 4
     carsContainer.y = TILE_SIZE / 4
+
+    // offset latest path grid
+    latestPathsContainer.x = TILE_SIZE / 4
+    latestPathsContainer.y = TILE_SIZE / 4
 
     // debug things
     pathGridContainer.visible = false
@@ -429,6 +435,7 @@ var gameScene = {
           zone: null,
           buildTimeout: null,
           building: null,
+          latestPaths: [],
         }
 
         // set tile position
@@ -533,6 +540,10 @@ var gameScene = {
 
       // console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
 
+      // remove lastest path
+      latestPathsContainer.removeChildren()
+
+      // perform button click
       if (selectedTool == BUTTON_R) {
         tile.zone = ZONE_R
         tile.building = null
@@ -572,6 +583,34 @@ var gameScene = {
 
       } else if (selectedTool == BUTTON_SELECTION) {
         console.log('Tile', tile)
+
+        // add the path
+        for (let i = 0; i < tile.latestPaths.length; i++) {
+          let pathObject = tile.latestPaths[i]
+          for (let j = 0; j < pathObject.path.length; j++) {
+
+            // draw dot
+            let point = pathObject.path[j]
+            let sprite = new PIXI.Sprite(PIXI.loader.resources['gridpoint'].texture)
+            sprite.anchor.x = 0.5
+            sprite.anchor.y = 0.5
+            sprite.x = point.x / 2 * TILE_SIZE
+            sprite.y = point.y / 2 * TILE_SIZE
+            latestPathsContainer.addChild(sprite)
+
+            // draw edge to next dot
+            if (j < pathObject.path.length - 1) {
+              let nextPoint = pathObject.path[j + 1]
+              let sprite = new PIXI.Sprite(PIXI.loader.resources['gridedge'].texture)
+              let angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x)
+              sprite.anchor.y = 0.5
+              sprite.rotation = angle
+              sprite.x = point.x / 2 * TILE_SIZE
+              sprite.y = point.y / 2 * TILE_SIZE
+              latestPathsContainer.addChild(sprite)
+            }
+          }
+        }
       }
     })
 
@@ -688,6 +727,23 @@ var gameScene = {
           this.state = PEOPLE_NO_PATH
           console.log(this.state)
         } else {
+
+          // save path to buildings
+          {
+            let departureTile = getTile(this.currentTileC, this.currentTileR)
+            departureTile.latestPaths.unshift({
+              path: JSON.parse(JSON.stringify(path)), // TODO: optimize here
+              // TODO: add energy cost
+            })
+
+            // keep the array at a reasonable length
+            while (departureTile.latestPaths.length > 5) {
+              departureTile.latestPaths.pop()
+            }
+
+          }
+
+          // set path and variables on person
           this.path = path
           this.destinationTileC = this.wantedDestinationTileC
           this.destinationTileR = this.wantedDestinationTileR
