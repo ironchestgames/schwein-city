@@ -14,9 +14,8 @@ var loadingScene = {
     .add('buttonI', 'assets/images/buttonI.png')
     .add('buttonRoad', 'assets/images/buttonRoad.png')
 
-    .add('forest_1', 'assets/images/forest_1.png')
-    .add('road', 'assets/images/road.png')
-    .add('person', 'assets/images/person.png')
+    .add('bg', 'assets/images/sc_map.png')
+
     .add('sc_car_01', 'assets/images/sc_car_01.png')
 
     .add('sc_crossroad_01', 'assets/images/sc_crossroad_01.png')

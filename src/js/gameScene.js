@@ -316,6 +316,12 @@ var gameScene = {
     markerContainer = new PIXI.Container()
     toolsWindowContainer = new PIXI.Container()
 
+    // add bg image
+    {
+      let image = new PIXI.Sprite(PIXI.loader.resources['bg'].texture)
+      worldContainer.addChild(image)
+    }
+
     // layer order
     worldContainer.addChild(tileContainer)
     worldContainer.addChild(pathGridContainer)
@@ -344,7 +350,6 @@ var gameScene = {
       for (var c = columnCount - 1; c >= 0; c--) {
 
         var terrain = gameVars.TERRAIN_FOREST
-        var texture = new PIXI.Sprite(PIXI.loader.resources['forest_1'].texture)
 
         var tile = {
           x: c,
@@ -362,8 +367,6 @@ var gameScene = {
 
         // set tile offset
         tile.container.y += -TILE_SIZE
-
-        tile.container.addChild(texture)
 
         tileContainer.addChild(tile.container)
 
@@ -576,7 +579,6 @@ var gameScene = {
     toolsWindowContainer.addChild(buttonRoad)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
-
 
   },
   destroy: function () {
