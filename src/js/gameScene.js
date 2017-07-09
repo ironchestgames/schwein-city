@@ -628,7 +628,7 @@ var gameScene = {
     easystar.setGrid(easystarGrid)
 
     // add cars NOTE: test
-    for (var i = 0; i < 3; i++) {
+    /*for (var i = 0; i < 3; i++) {
       var car = {
         // x: randomInteger(0, columnCount * 2 - 1),
         // y: randomInteger(0, rowCount * 2 - 1),
@@ -666,7 +666,7 @@ var gameScene = {
           console.log('NO PATH')
         }
       }.bind(car))
-    }
+    }*/
 
   },
   destroy: function () {
@@ -756,15 +756,15 @@ var gameScene = {
               //console.log(tiles[1][1])
               //console.log(tiles[0][0])
               //console.log('found industry at tile', searchTile)
-              //easystar.findPath(tile.x * 2 -1, tile.y * 2 + 1, searchTile.x * 2, searchTile.y * 2, function(path) {
+              easystar.findPath((tile.x * 2) - 1, (tile.y * 2) - 1, (searchTile.x * 2) - 1, (searchTile.y * 2) - 1, function(path) {
 
-              /*easystar.findPath(0, 0, 1, 2, function(path) {
+              //easystar.findPath(0, 0, 1, 2, function(path) {
                 if (path !== null) {
                   console.log('PATH yes', path)
                 } else {
                   console.log('PATH no')
                 }
-              })*/
+              })
             }
           })
         }
