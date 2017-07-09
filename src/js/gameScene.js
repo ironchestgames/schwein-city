@@ -4,8 +4,8 @@ var normalizeRange = require('normalize-range')
 var gameVars = require('./gameVars')
 
 // tile variables
-var rowCount = 4
-var columnCount = 4
+var rowCount = 10
+var columnCount = 3
 
 var TILE_SIZE = 32
 var tiles
@@ -85,6 +85,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_06'].texture))
+
   // turnaround - exit to the left
   } else if (!isTileRightRoad &&
       !isTileDownRoad &&
@@ -94,6 +97,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_05'].texture))
 
   // turnaround - exit to the top
   } else if (!isTileRightRoad &&
@@ -105,6 +111,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_04'].texture))
+
   // turnaround - exit to the bottom
   } else if (!isTileRightRoad &&
       isTileDownRoad &&
@@ -114,6 +123,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_03'].texture))
 
   // straight horizontal
   } else if (isTileRightRoad &&
@@ -125,6 +137,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_01'].texture))
+
   // straight vertical
   } else if (!isTileRightRoad &&
       isTileDownRoad &&
@@ -134,6 +149,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_02'].texture))
 
   // turn, exits: left + down
   } else if (!isTileRightRoad &&
@@ -185,6 +203,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT, Easystarjs.BOTTOM])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_crossroad_02'].texture))
+
   // T-cross, horizontal + up
   } else if (isTileRightRoad &&
       !isTileDownRoad &&
@@ -194,6 +215,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_crossroad_03'].texture))
 
   // T-cross, vertical + right
   } else if (isTileRightRoad &&
@@ -205,6 +229,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_crossroad_05'].texture))
+
   // T-cross, vertical + left
   } else if (!isTileRightRoad &&
       isTileDownRoad &&
@@ -214,6 +241,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP, Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_crossroad_04'].texture))
 
   // X-cross
   } else if (isTileRightRoad &&
@@ -225,6 +255,8 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP, Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_crossroad_01'].texture))
   }
 }
 
@@ -245,13 +277,19 @@ var gameScene = {
     worldContainer.addChild(pathGridContainer)
     worldContainer.addChild(carsContainer)
 
+    carsContainer.x = TILE_SIZE / 4
+    carsContainer.y = TILE_SIZE / 4
+
     container.addChild(worldContainer)
     container.addChild(markerContainer)
 
     global.baseStage.addChild(container)
 
+    // debug things
+    pathGridContainer.visible = false
+
     // create the tiles
-    var roadtiles = ['1_0', '1_1', '1_2', '0_1', '2_1']
+    var roadtiles = ['0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', ]
     tiles = []
 
     for (var r = 0; r < rowCount; r++) {
@@ -343,12 +381,16 @@ var gameScene = {
     cars = []
 
     // add cars NOTE: test
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 3; i++) {
       var car = {
-        x: randomInteger(0, columnCount * 2 - 1),
-        y: randomInteger(0, rowCount * 2 - 1),
-        targetX: randomInteger(0, columnCount * 2 - 1),
-        targetY: randomInteger(0, rowCount * 2 - 1),
+        // x: randomInteger(0, columnCount * 2 - 1),
+        // y: randomInteger(0, rowCount * 2 - 1),
+        // targetX: randomInteger(0, columnCount * 2 - 1),
+        // targetY: randomInteger(0, rowCount * 2 - 1),
+        x: 0,
+        y: 0,
+        targetX: 1,
+        targetY: 4,
         speed: 0.5 + randomInteger(1, 10) / 10,
         container: new PIXI.Container(),
       }
