@@ -38,8 +38,10 @@ var loadingScene = {
     .add('sc_zone_commercial', 'assets/images/sc_zone_commercial.png')
     .add('sc_zone_industry', 'assets/images/sc_zone_industry.png')
 
+    .add('sc_house_small_01', 'assets/images/sc_house_small_01.png')
+
     .add('gridpoint', 'assets/images/gridpoint.png')
-    
+
     .load(function () {
       this.changeScene('gameScene', sceneParams)
     }.bind(this))
