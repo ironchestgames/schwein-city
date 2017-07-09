@@ -790,7 +790,6 @@ var gameScene = {
           })
         }
       }
->>>>>>> 2b8dec0549375202d1c6bcb63f432b87f9808f0a
     })
   },
   draw: function () {
