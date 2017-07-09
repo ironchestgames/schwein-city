@@ -4,6 +4,9 @@ var normalizeRange = require('normalize-range')
 var gameVars = require('./gameVars')
 var presetMap = require('./presetMap')
 
+const BNP_GLOBAL_DEDUCTION = 0.001
+const BNP_WORKER_ADDITION = 0.004
+
 // tile variables
 var TILE_SIZE = 32
 var tiles
@@ -63,6 +66,9 @@ var carsContainer // cars
 var markerContainer // for the mouse marker
 var inputContainer // for the invisible input layers
 var toolsWindowContainer // tools, like RCI and road buttons
+
+// Pixi handles for updating graphics
+var bnpText
 
 var pathGridContainer // for debug
 
@@ -452,7 +458,7 @@ var gameScene = {
     window.people = people // NOTE: for debugging
 
     // init pnp
-    bnp = 0
+    bnp = 0.0
 
     // init easystar
     easystar = new Easystarjs.js()
@@ -631,6 +637,10 @@ var gameScene = {
       selectedTool = BUTTON_SELECTION
     })
     toolsWindowContainer.addChild(buttonSelection)
+
+    bnpText = new PIXI.Text(" BNP: -", {fontFamily : 'Helvetica', fontSize: 11, fill : 0xf8f8f8 })
+    bnpText.y = buttonSelection.height * 5
+    toolsWindowContainer.addChild(bnpText)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
 
@@ -815,6 +825,7 @@ var gameScene = {
 
         case PEOPLE_WORKING:
           person.values.tiredness += dt
+          bnp = bnp + BNP_WORKER_ADDITION
           if (person.values.tiredness > 4000) {
             person.state = PEOPLE_GO_HOME
           }
@@ -835,6 +846,13 @@ var gameScene = {
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
     })
+
+
+    // Global BNP deduction
+    bnp = Math.max(0, bnp - BNP_GLOBAL_DEDUCTION)
+
+    // Update BNP text
+    bnpText.text = " BNP: " + (Math.round(bnp * 100) / 100)
   },
   draw: function () {
     global.renderer.render(container)
