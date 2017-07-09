@@ -456,7 +456,11 @@ var gameScene = {
           building: null,
           latestPaths: [],
           averageArrivalTiredness: null,
-          commercialCount: null
+          commercialCount: null,
+          tier1: null,
+          tier2: null,
+          tier3: null,
+          tier4: null
         }
 
         // set tile position
@@ -1005,7 +1009,7 @@ var gameScene = {
     allTiles((tile) => {
 
       // construct buildings
-      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03', 'sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(5)])
+      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_commercials_01', 'sc_commercials_02', 'sc_commercials_03'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
@@ -1035,6 +1039,22 @@ function countCommercialInArea(tile) {
       }
     }
   }
+  let modifier = getCommercialModifier(count)
+  if (tile.tier1) {
+    tile.tier1.visible = false
+    tile.tier2.visible = false
+    tile.tier3.visible = false
+    tile.tier4.visible = false
+    if (modifier === 1) {
+      tile.tier1.visible = true
+    } else if (modifier === 4) {
+      tile.tier2.visible = true
+    } else if (modifier === 10) {
+      tile.tier3.visible = true
+    } else if (modifier > 10) {
+      tile.tier4.visible = true
+    }
+  }
   tile.commercialCount = count
 }
 
@@ -1047,7 +1067,7 @@ function getCommercialModifier(count) {
     return 20
   } else if (count > 3) {
     return 10
-  } else if (count > 1) {
+  } else if (count > 0) {
     return 4
   }
   return 1
@@ -1066,7 +1086,19 @@ function calcTile(tile, zone, building, resource) {
       tile.buildTimeout = null
       tile.building = building
       tile.container.removeChildren()
-      tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
+
+      tile.tier1 = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
+      tile.container.addChild(tile.tier1)
+
+      if (zone === ZONE_R) {
+        tile.tier2 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
+        tile.tier3 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
+        tile.tier4 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
+        tile.container.addChild(tile.tier2)
+        tile.container.addChild(tile.tier3)
+        tile.container.addChild(tile.tier4)
+      }
+
 
       if (zone === ZONE_R) {
 
