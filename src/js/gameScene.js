@@ -1009,7 +1009,7 @@ var gameScene = {
     allTiles((tile) => {
 
       // construct buildings
-      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
+      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02'][randomInteger(1)])
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_commercials_01', 'sc_commercials_02', 'sc_commercials_03'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
@@ -1047,6 +1047,7 @@ function countCommercialInArea(tile) {
     tile.tier4.visible = false
     tile.tier5.visible = false
     tile.tier6.visible = false
+    tile.tier7.visible = false
     if (modifier === 1) {
       tile.tier1.visible = true
     } else if (modifier === 4) {
@@ -1055,8 +1056,10 @@ function countCommercialInArea(tile) {
       tile.tier3.visible = true
     } else if (modifier === 20) {
       tile.tier5.visible = true
-    } else if (modifier > 20) {
+    } else if (modifier === 25) {
       tile.tier6.visible = true
+    } else if (modifier > 25) {
+      tile.tier7.visible = true
     }
   }
   tile.commercialCount = count
@@ -1095,16 +1098,18 @@ function calcTile(tile, zone, building, resource) {
       tile.container.addChild(tile.tier1)
 
       if (zone === ZONE_R) {
-        tile.tier2 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
-        tile.tier3 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
-        tile.tier4 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
-        tile.tier5 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_06'].texture)
-        tile.tier6 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_05'].texture)
+        tile.tier2 = new PIXI.Sprite(PIXI.loader.resources['sc_house_small_03'].texture)
+        tile.tier3 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
+        tile.tier4 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
+        tile.tier5 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
+        tile.tier6 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_06'].texture)
+        tile.tier7 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_05'].texture)
         tile.container.addChild(tile.tier2)
         tile.container.addChild(tile.tier3)
         tile.container.addChild(tile.tier4)
         tile.container.addChild(tile.tier5)
         tile.container.addChild(tile.tier6)
+        tile.container.addChild(tile.tier7)
       }
 
 
