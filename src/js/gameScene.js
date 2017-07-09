@@ -720,6 +720,7 @@ var gameScene = {
           allTiles((searchTile) => {
             if (tile === person.homeTile) {
               if (isTileZoneOfType(searchTile, ZONE_I)) {
+                console.log('imma go to werrkkk')
                 person.checkingForState = true
                 person.destination = searchTile
                 easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
@@ -744,8 +745,6 @@ var gameScene = {
 
 function addCar(path, tile, searchTile, person) {
   if (path !== null) {
-    person.checkingForState = false
-
     tile.people = []
     var car = {
       x: tile.x * 2,
@@ -768,6 +767,8 @@ function addCar(path, tile, searchTile, person) {
 
     carsContainer.addChild(car.container)
   }
+  person.checkingForState = false
+  person.destination = null
 }
 
 module.exports = gameScene
