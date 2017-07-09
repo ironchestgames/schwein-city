@@ -748,6 +748,7 @@ var gameScene = {
               happiness: 0,
               checkingForState: false,
               car: null,
+              carModel: randomInteger(10),
               tile: tile
             }
             console.log(tile)
@@ -804,6 +805,8 @@ function addCar(path, tile, searchTile, person) {
   } else {
     person.tile = null
     //tile.people = []
+
+    // car definition
     var car = {
       x: tile.x * 2,
       y: (tile.y * 2) + 2,
@@ -825,7 +828,7 @@ function addCar(path, tile, searchTile, person) {
       'sc_car_08',
       'sc_car_09',
       'sc_car_10',
-      'sc_car_11'][randomInteger(10)]
+      'sc_car_11'][person.carModel]
     var sprite = new PIXI.Sprite(PIXI.loader.resources[resourceName].texture)
     sprite.x = -sprite.width / 2
     sprite.y = -sprite.height / 2
