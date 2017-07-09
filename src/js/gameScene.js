@@ -645,6 +645,28 @@ var gameScene = {
 
     // calulate people
     for (var i = 0; i < people.length; i++) {
+      let person = people[i]
+      let tile = person.tile
+      // search for a place to go
+      if (person.checkingForState === false && !person.destination) {
+        allTiles((searchTile) => {
+          if (tile === person.homeTile) {
+            if (isTileZoneOfType(searchTile, ZONE_I)) {
+              person.checkingForState = true
+              person.destination = searchTile
+              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
+            }
+          } else {
+            if (searchTile === person.homeTile) {
+              person.checkingForState = true
+              person.destination = searchTile
+              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
+            }
+          }
+        })
+      }
+
+      // calculate the car if it has one
       let car = people[i].car
       if (car && car.path && car.path.length) {
         var nextTileInPath = car.path[0]
@@ -670,8 +692,8 @@ var gameScene = {
           car.path.shift()
           if (car.path.length == 0) {
             carsContainer.removeChild(people[i].car.container)
-            //carsContainer.removeChildren()
             people[i].destination.people.push(people[i])
+            people[i].tile = people[i].destination
             people[i].car = null
             people[i].destination = null
           }
@@ -702,7 +724,8 @@ var gameScene = {
               homeTile: tile,
               happiness: 0,
               checkingForState: false,
-              car: null
+              car: null,
+              tile: tile
             }
             people.push(moverIn)
             tile.people.push(moverIn)
@@ -718,31 +741,6 @@ var gameScene = {
       calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02'][randomInteger(1)])
-
-      // calculate people
-      if (tile.people && (tile.people.length > 0)) {
-        for (let i = 0; i < tile.people.length ; i++) {
-          let person = tile.people[i]
-          if (person.checkingForState || person.destination) return;
-
-          allTiles((searchTile) => {
-            if (tile === person.homeTile) {
-              if (isTileZoneOfType(searchTile, ZONE_I)) {
-                person.checkingForState = true
-                person.destination = searchTile
-                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
-              }
-            } else {
-              if (searchTile === person.homeTile) {
-                person.checkingForState = true
-                person.destination = searchTile
-                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
-              }
-            }
-
-          })
-        }
-      }
     })
   },
   draw: function () {
@@ -755,6 +753,7 @@ function addCar(path, tile, searchTile, person) {
   if (path === null) {
     person.destination = null
   } else {
+    person.tile = null
     tile.people = []
     var car = {
       x: tile.x * 2,
