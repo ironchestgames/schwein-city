@@ -708,7 +708,7 @@ var gameScene = {
       let pathCallback = function (path) {
         if (path === null) {
           this.state = PEOPLE_NO_PATH
-          console.log(this.state)
+          this.timer = 4000
         } else {
           this.path = path
           this.destinationTileC = this.wantedDestinationTileC
@@ -718,10 +718,6 @@ var gameScene = {
         }
       }.bind(person)
 
-      // decide
-
-
-      // execute
       switch (person.state) {
         case PEOPLE_RESTING:
           person.values.tiredness -= dt
@@ -838,6 +834,15 @@ var gameScene = {
           break
 
         case PEOPLE_NO_PATH:
+          if (person.timer === null)
+            console.error("Set a timer ya dingus")
+
+          person.timer -= dt
+          if (person.timer < 0) {
+            person.timer = null
+            person.state = PEOPLE_GO_TO_WORK
+          }
+
           break
       }
 
@@ -894,6 +899,8 @@ calcTile = function(tile, zone, building, resource) {
           hasWorkplace: false,
           workplaceTileC: null,
           workplaceTileR: null,
+
+          timer: null,
 
           state: PEOPLE_RESTING,
 
