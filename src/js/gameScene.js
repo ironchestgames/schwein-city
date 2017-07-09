@@ -776,7 +776,19 @@ function addCar(path, tile, searchTile, person) {
       path: path
     }
     person.car = car
-    var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
+    let resourceName = [
+      'sc_car_01',
+      'sc_car_02',
+      'sc_car_03',
+      'sc_car_04',
+      'sc_car_05',
+      'sc_car_06',
+      'sc_car_07',
+      'sc_car_08',
+      'sc_car_09',
+      'sc_car_10',
+      'sc_car_11'][randomInteger(10)]
+    var sprite = new PIXI.Sprite(PIXI.loader.resources[resourceName].texture)
     sprite.x = -sprite.width / 2
     sprite.y = -sprite.height / 2
 

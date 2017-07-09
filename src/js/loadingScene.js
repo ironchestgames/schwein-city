@@ -18,6 +18,16 @@ var loadingScene = {
     .add('bg', 'assets/images/sc_map.png')
 
     .add('sc_car_01', 'assets/images/sc_car_01.png')
+    .add('sc_car_02', 'assets/images/sc_car_02.png')
+    .add('sc_car_03', 'assets/images/sc_car_03.png')
+    .add('sc_car_04', 'assets/images/sc_car_04.png')
+    .add('sc_car_05', 'assets/images/sc_car_05.png')
+    .add('sc_car_06', 'assets/images/sc_car_06.png')
+    .add('sc_car_07', 'assets/images/sc_car_07.png')
+    .add('sc_car_08', 'assets/images/sc_car_08.png')
+    .add('sc_car_09', 'assets/images/sc_car_09.png')
+    .add('sc_car_10', 'assets/images/sc_car_10.png')
+    .add('sc_car_11', 'assets/images/sc_car_11.png')
 
     .add('sc_crossroad_01', 'assets/images/sc_crossroad_01.png')
     .add('sc_crossroad_02', 'assets/images/sc_crossroad_02.png')
