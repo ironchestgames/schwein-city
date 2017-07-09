@@ -14,6 +14,7 @@ var loadingScene = {
     .add('buttonI', 'assets/images/buttonI.png')
     .add('buttonSelection', 'assets/images/buttonSelection.png')
     .add('buttonRoad', 'assets/images/buttonRoad.png')
+    .add('buttonRemoveRoad', 'assets/images/buttonRemoveRoad.png')
 
     .add('bg', 'assets/images/sc_map.png')
 

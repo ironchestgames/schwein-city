@@ -58,6 +58,7 @@ var BUTTON_R = 'BUTTON_R'
 var BUTTON_C = 'BUTTON_C'
 var BUTTON_I = 'BUTTON_I'
 var BUTTON_ROAD = 'BUTTON_ROAD'
+var BUTTON_REMOVE_ROAD = 'BUTTON_REMOVE_ROAD'
 var BUTTON_SELECTION = 'BUTTON_SELECTION'
 
 var selectedTool // one of the RCI above
@@ -605,6 +606,22 @@ var gameScene = {
 
         updateAdjacentTiles(tile)
 
+      } else if (selectedTool == BUTTON_REMOVE_ROAD) {
+        tile.zone = null
+        tile.building = null
+        tile.terrain = gameVars.TERRAIN_FOREST
+        tileContainer.removeChild(tile.container)
+        tile.container.removeChildren()
+        let c2 = tile.x * 2
+        let r2 = tile.y * 2
+
+        easystar.setDirectionalCondition(c2, r2, [])
+        easystar.setDirectionalCondition(c2 + 1, r2, [])
+        easystar.setDirectionalCondition(c2, r2 + 1, [])
+        easystar.setDirectionalCondition(c2 + 1, r2 + 1, [])
+
+        updateAdjacentTiles(tile)
+
       } else if (selectedTool == BUTTON_SELECTION) {
         console.log('Tile', tile)
 
@@ -694,9 +711,18 @@ var gameScene = {
     })
     toolsWindowContainer.addChild(buttonRoad)
 
+    var buttonRemoveRoad = new PIXI.Sprite(PIXI.loader.resources['buttonRemoveRoad'].texture)
+    buttonRemoveRoad.interactive = true
+    buttonRemoveRoad.x = 4
+    buttonRemoveRoad.y = buttonRemoveRoad.height * 4
+    buttonRemoveRoad.on('click', function (event) {
+      selectedTool = BUTTON_REMOVE_ROAD
+    })
+    toolsWindowContainer.addChild(buttonRemoveRoad)
+
     var buttonSelection = new PIXI.Sprite(PIXI.loader.resources['buttonSelection'].texture)
     buttonSelection.interactive = true
-    buttonSelection.y = buttonSelection.height * 4
+    buttonSelection.y = buttonSelection.height * 5
     buttonSelection.on('click', function (event) {
       selectedTool = BUTTON_SELECTION
     })
@@ -704,12 +730,12 @@ var gameScene = {
 
     var bnpLabel = new PIXI.Text("BNP:", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
     bnpLabel.x = 5
-    bnpLabel.y = buttonSelection.height * 5
+    bnpLabel.y = buttonSelection.height * 6
     toolsWindowContainer.addChild(bnpLabel)
 
     bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
     bnpText.x = 5
-    bnpText.y = buttonSelection.height * 5 + 10
+    bnpText.y = buttonSelection.height * 6 + 10
     toolsWindowContainer.addChild(bnpText)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
