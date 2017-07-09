@@ -27,11 +27,13 @@
     "console.js": "^1.1.0",
     "debug": "^2.6.1",
     "easystarjs": "^0.3.1",
+    "fill-range": "^4.0.0",
     "local-preferences": "^2.1.2",
     "normalize-range": "^0.1.2",
     "obscen": "^0.x",
     "pixi.js": "^4.2.2",
     "random-integer": "^2.0.0",
+    "shuffle-array": "^1.0.1",
     "window-load": "^1.0.0"
   }
 }

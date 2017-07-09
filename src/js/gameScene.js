@@ -1,6 +1,8 @@
 var Easystarjs = require('./easystar/easystar')
 var randomInteger = require('random-integer')
 var normalizeRange = require('normalize-range')
+var shuffleArray = require('shuffle-array')
+var fillRange = require('fill-range')
 var gameVars = require('./gameVars')
 var presetMap = require('./presetMap')
 
@@ -836,14 +838,20 @@ var gameScene = {
 
         case PEOPLE_FIND_WORKPLACE:
 
-          // find a workplace
-          loop: for (var r = 0; r < tiles.length; r++) {
-            for (var c = 0; c < tiles[r].length; c++) {
-              if (tiles[r][c].building === BUILDING_I_01) {
-                person.hasWorkplace = true
-                person.workplaceTileC = c
-                person.workplaceTileR = r
-                break loop
+          // find a random workplace
+          {
+            let randomRowIndeces = shuffleArray(fillRange(0, tiles.length - 1))
+            let randomColumnIndeces = shuffleArray(fillRange(0, tiles[0].length - 1))
+            loop: for (var i = 0; i < randomRowIndeces.length; i++) {
+              let r = randomRowIndeces[i]
+              for (var j = 0; j < randomColumnIndeces.length; j++) {
+                let c = randomColumnIndeces[j]
+                if (tiles[r][c].building === BUILDING_I_01) {
+                  person.hasWorkplace = true
+                  person.workplaceTileC = c
+                  person.workplaceTileR = r
+                  break loop
+                }
               }
             }
           }
