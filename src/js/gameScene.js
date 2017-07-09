@@ -460,7 +460,10 @@ var gameScene = {
           tier1: null,
           tier2: null,
           tier3: null,
-          tier4: null
+          tier4: null,
+          tier5: null,
+          tier6: null,
+          tier7: null
         }
 
         // set tile position
@@ -1032,8 +1035,8 @@ function countCommercialInArea(tile) {
   if (tile.zone !== ZONE_R) return;
 
   let count = 0
-  for (let r = tile.x - 4; r <= tile.x + 4; r++) {
-    for (let c = tile.y - 4; c <= tile.y + 4; c++) {
+  for (let c = tile.x - 4; c <= tile.x + 4; c++) {
+    for (let r = tile.y - 4; r <= tile.y + 4; r++) {
       if (tiles[r] && tiles[r][c] && tiles[r][c].zone === ZONE_C) {
         count++
       }
