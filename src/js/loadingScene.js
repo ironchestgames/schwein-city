@@ -40,6 +40,10 @@ var loadingScene = {
 
     .add('sc_house_small_01', 'assets/images/sc_house_small_01.png')
 
+    .add('sc_house_01_2lev', 'assets/images/sc_house_01_2lev.png')
+
+    .add('sc_house_01_4lev', 'assets/images/sc_house_01_4lev.png')
+
     .add('gridpoint', 'assets/images/gridpoint.png')
 
     .load(function () {

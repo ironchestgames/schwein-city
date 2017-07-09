@@ -15,6 +15,8 @@ var ZONE_C = 'ZONE_C'
 var ZONE_I = 'ZONE_I'
 
 var BUILDING_R_01 = 'BUILDING_R_01'
+var BUILDING_C_01 = 'BUILDING_C_01'
+var BUILDING_I_01 = 'BUILDING_I_01'
 
 // camera
 var VIEW_WIDTH = columnCount * TILE_SIZE
@@ -624,8 +626,8 @@ var gameScene = {
     }
 
     // construct buildings
-    allTiles((tile) => {
-      if (tile.zone === ZONE_R && tile.building === null) {
+    calcTile = function(tile, zone, building, resource) {
+      if (tile.zone === zone && tile.building === null) {
 
         if (tile.buildTimeout === null) {
           let times = [100, 150, 200, 250, 300]
@@ -635,11 +637,16 @@ var gameScene = {
         }
         if (tile.buildTimeout <= 0) {
           tile.buildTimeout = null
-          tile.building = BUILDING_R_01
+          tile.building = building
           tile.container.removeChildren()
-          tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_house_small_01'].texture))
+          tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
         }
       }
+    }
+    allTiles((tile) => {
+      calcTile(tile, ZONE_R, BUILDING_R_01, 'sc_house_small_01')
+      calcTile(tile, ZONE_C, BUILDING_C_01, 'sc_house_01_2lev')
+      calcTile(tile, ZONE_I, BUILDING_I_01, 'sc_house_01_4lev')
     })
   },
   draw: function () {
