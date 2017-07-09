@@ -40,6 +40,8 @@ var loadingScene = {
     .add('sc_zone_industry', 'assets/images/sc_zone_industry.png')
 
     .add('sc_house_small_01', 'assets/images/sc_house_small_01.png')
+    .add('sc_house_small_02', 'assets/images/sc_house_small_02.png')
+    .add('sc_house_small_03', 'assets/images/sc_house_small_03.png')
 
     .add('sc_house_01_2lev', 'assets/images/sc_house_01_2lev.png')
 

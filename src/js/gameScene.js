@@ -689,7 +689,7 @@ var gameScene = {
       }
     }
     allTiles((tile) => {
-      calcTile(tile, ZONE_R, BUILDING_R_01, 'sc_house_small_01')
+      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
       calcTile(tile, ZONE_C, BUILDING_C_01, 'sc_house_01_2lev')
       calcTile(tile, ZONE_I, BUILDING_I_01, 'sc_house_01_4lev')
     })
