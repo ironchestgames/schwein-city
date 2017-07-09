@@ -2,6 +2,7 @@ var Easystarjs = require('./easystar/easystar')
 var randomInteger = require('random-integer')
 var normalizeRange = require('normalize-range')
 var gameVars = require('./gameVars')
+var presetMap = require('./presetMap')
 
 // tile variables
 var TILE_SIZE = 32
@@ -620,6 +621,31 @@ var gameScene = {
     toolsWindowContainer.addChild(buttonSelection)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
+
+    // load preset map, NOTE: for dev
+    if (presetMap) {
+      for (let r = 0; r < presetMap.length; r++) {
+        for (let c = 0; c < presetMap[r].length; c++) {
+          if (presetMap) {
+            let presetValue = presetMap[r][c]
+
+            if (presetValue === 'x') {
+              let tile = tiles[r][c]
+              tile.terrain = gameVars.TERRAIN_ROAD
+              updateRoadTile(tile)
+              updateAdjacentTiles(tile)
+
+            } else if (presetValue === 'R') {
+              let tile = tiles[r][c]
+              tile.zone = ZONE_R
+              tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_residents'].texture))
+
+            }
+          }
+        }
+      }
+    }
+    
 
   },
   destroy: function () {
