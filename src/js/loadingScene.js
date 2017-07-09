@@ -29,6 +29,10 @@ var loadingScene = {
     .add('sc_road_04', 'assets/images/sc_road_04.png')
     .add('sc_road_05', 'assets/images/sc_road_05.png')
     .add('sc_road_06', 'assets/images/sc_road_06.png')
+    .add('sc_turn_01', 'assets/images/sc_turn_01.png')
+    .add('sc_turn_02', 'assets/images/sc_turn_02.png')
+    .add('sc_turn_03', 'assets/images/sc_turn_03.png')
+    .add('sc_turn_04', 'assets/images/sc_turn_04.png')
 
     .add('sc_zone_residents', 'assets/images/sc_zone_residents.png')
     .add('sc_zone_commercial', 'assets/images/sc_zone_commercial.png')

@@ -175,6 +175,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_turn_02'].texture))
+
   // turn, exits: left + up
   } else if (!isTileRightRoad &&
       !isTileDownRoad &&
@@ -184,6 +187,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_turn_03'].texture))
 
   // turn, exits: right + down
   } else if (isTileRightRoad &&
@@ -195,6 +201,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
 
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_turn_01'].texture))
+
   // turn, exits: right + up
   } else if (isTileRightRoad &&
       !isTileDownRoad &&
@@ -204,6 +213,9 @@ var updateRoadTile = function (tile) {
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_turn_04'].texture))
 
   // T-cross, horizontal + down
   } else if (isTileRightRoad &&
@@ -269,6 +281,15 @@ var updateRoadTile = function (tile) {
 
     tile.container.removeChildren()
     tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_crossroad_01'].texture))
+
+  // a completely unconnected road tile
+  } else if (!isTileRightRoad &&
+      !isTileDownRoad &&
+      !isTileLeftRoad &&
+      !isTileUpRoad) {
+
+    tile.container.removeChildren()
+    tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_02'].texture))
   }
 }
 
@@ -331,7 +352,8 @@ var gameScene = {
         tile.container.x = tile.x * TILE_SIZE
         tile.container.y = tile.y * TILE_SIZE
 
-        texture.y = -TILE_SIZE
+        // set tile offset
+        tile.container.y += -TILE_SIZE
 
         tile.container.addChild(texture)
 
