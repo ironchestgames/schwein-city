@@ -37,6 +37,8 @@ var BUTTON_R = 'BUTTON_R'
 var BUTTON_C = 'BUTTON_C'
 var BUTTON_I = 'BUTTON_I'
 var BUTTON_ROAD = 'BUTTON_ROAD'
+var BUTTON_SELECTION = 'BUTTON_SELECTION'
+
 var selectedTool // one of the RCI above
 
 // pixi containers
@@ -386,6 +388,7 @@ var gameScene = {
 
         var terrain = gameVars.TERRAIN_FOREST
 
+        // tile definition
         var tile = {
           x: c,
           y: r,
@@ -393,7 +396,8 @@ var gameScene = {
           container: new PIXI.Container(),
           zone: null,
           buildTimeout: null,
-          building: null
+          building: null,
+          people: null
         }
 
         // set tile position
@@ -555,6 +559,8 @@ var gameScene = {
 
         updateAdjacentTiles(tile)
 
+      } else if (selectedTool == BUTTON_SELECTION) {
+        console.log('Tile', tile)
       }
     })
 
@@ -600,6 +606,14 @@ var gameScene = {
       selectedTool = BUTTON_ROAD
     })
     toolsWindowContainer.addChild(buttonRoad)
+
+    var buttonSelection = new PIXI.Sprite(PIXI.loader.resources['buttonSelection'].texture)
+    buttonSelection.interactive = true
+    buttonSelection.y = buttonSelection.height * 4
+    buttonSelection.on('click', function (event) {
+      selectedTool = BUTTON_SELECTION
+    })
+    toolsWindowContainer.addChild(buttonSelection)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
 
@@ -661,6 +675,16 @@ var gameScene = {
           tile.building = building
           tile.container.removeChildren()
           tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
+
+          if (zone === ZONE_R) {
+            tile.people = []
+
+            // people definition
+            tile.people.push({
+              homeTile: tile,
+              happiness: 0
+            })
+          }
         }
       }
     }
