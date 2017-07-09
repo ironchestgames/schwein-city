@@ -454,7 +454,8 @@ var gameScene = {
           buildTimeout: null,
           building: null,
           latestPaths: [],
-          averageArrivalTiredness: null
+          averageArrivalTiredness: null,
+          commercialCount: null
         }
 
         // set tile position
@@ -617,6 +618,9 @@ var gameScene = {
 
         if (tile.averageArrivalTiredness)
           console.log('Average tiredness', tile.averageArrivalTiredness)
+
+        if (tile.commercialCount)
+          console.log('Commercial count', tile.commercialCount)
 
         // add the path
         let pathColors = [
@@ -812,7 +816,7 @@ var gameScene = {
 
       switch (person.state) {
         case PEOPLE_RESTING:
-          person.values.tiredness -= dt * REST_RECOVERY_MULTIPLIER
+          person.values.tiredness -= dt * REST_RECOVERY_MULTIPLIER * getCommercialModifier(currentTile.commercialCount)
           if (person.values.tiredness < 0) {
             person.state = PEOPLE_GO_TO_WORK
           }
@@ -963,6 +967,7 @@ var gameScene = {
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_commercials_01', 'sc_commercials_02', 'sc_commercials_03'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
+      countCommercialInArea(tile)
     })
 
 
@@ -977,7 +982,36 @@ var gameScene = {
   },
 }
 
-calcTile = function(tile, zone, building, resource) {
+function countCommercialInArea(tile) {
+  if (tile.zone !== ZONE_R) return;
+
+  let count = 0
+  for (let r = tile.x - 4; r <= tile.x + 4; r++) {
+    for (let c = tile.y - 4; c <= tile.y + 4; c++) {
+      if (tiles[r] && tiles[r][c] && tiles[r][c].zone === ZONE_C) {
+        count++
+      }
+    }
+  }
+  tile.commercialCount = count
+}
+
+function getCommercialModifier(count) {
+  if (count > 15) {
+    return 30
+  } else if (count > 10) {
+    return 25
+  } else if (count > 6) {
+    return 20
+  } else if (count > 3) {
+    return 10
+  } else if (count > 1) {
+    return 4
+  }
+  return 1
+}
+
+function calcTile(tile, zone, building, resource) {
   if (tile.zone === zone && tile.building === null) {
 
     if (tile.buildTimeout === null) {
@@ -1059,16 +1093,5 @@ function createCar(path, tileC, tileR, carModel) {
 
   return car
 }
-
-// debug
-/*setInterval(() => {
-  let value = people && people[0] && people[0].values.tiredness
-  console.log('tired:', value)
-} ,100)
-setInterval(() => {
-  if (!tiles) return
-  let value = tiles[3][5].averageArrivalTiredness
-  console.log('industry', value)
-}, 100)*/
 
 module.exports = gameScene
