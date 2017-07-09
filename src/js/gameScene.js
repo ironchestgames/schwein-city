@@ -271,7 +271,7 @@ var updateRoadTile = function (tile) {
       !isTileUpRoad) {
     easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
-    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT, Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT, Easystarjs.BOTTOM])
 
     tile.container.removeChildren()
@@ -894,7 +894,23 @@ var gameScene = {
         case PEOPLE_DRIVING:
           let car = person.car
           var nextTileInPath = car.path[0]
+
+          // calc speed
           var speed = car.speed
+
+          for (let j = 0; j < people.length; j++) {
+            let otherPerson = people[j]
+            if (otherPerson !== person && otherPerson.car !== null) {
+              let dx = otherPerson.car.container.x - car.container.x
+              let dy = otherPerson.car.container.y - car.container.y
+              let distance = Math.sqrt(dx * dx + dy * dy)
+              if (distance < TILE_SIZE * 0.65) {
+                speed *= 0.84
+              }
+            }
+          }
+
+          speed = normalizeRange.limit(0.1, car.speed, speed)
 
           var dx = nextTileInPath.x / 2 * TILE_SIZE - car.container.x
           var dy = nextTileInPath.y / 2 * TILE_SIZE - car.container.y
@@ -1039,7 +1055,7 @@ function createCar(path, tileC, tileR, carModel) {
   var car = {
     x: tileC * 2,
     y: (tileR * 2) + 2,
-    speed: 0.5 + randomInteger(1, 10) / 10,
+    speed: 1.2 + Math.random() * 0.2,
     container: new PIXI.Container(),
     path: path
   }
