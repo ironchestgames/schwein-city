@@ -456,7 +456,14 @@ var gameScene = {
           building: null,
           latestPaths: [],
           averageArrivalTiredness: null,
-          commercialCount: null
+          commercialCount: null,
+          tier1: null,
+          tier2: null,
+          tier3: null,
+          tier4: null,
+          tier5: null,
+          tier6: null,
+          tier7: null
         }
 
         // set tile position
@@ -1039,7 +1046,7 @@ var gameScene = {
     allTiles((tile) => {
 
       // construct buildings
-      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03', 'sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(5)])
+      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02'][randomInteger(1)])
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_commercials_01', 'sc_commercials_02', 'sc_commercials_03'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
@@ -1062,11 +1069,34 @@ function countCommercialInArea(tile) {
   if (tile.zone !== ZONE_R) return;
 
   let count = 0
-  for (let r = tile.x - 4; r <= tile.x + 4; r++) {
-    for (let c = tile.y - 4; c <= tile.y + 4; c++) {
+  for (let c = tile.x - 4; c <= tile.x + 4; c++) {
+    for (let r = tile.y - 4; r <= tile.y + 4; r++) {
       if (tiles[r] && tiles[r][c] && tiles[r][c].zone === ZONE_C) {
         count++
       }
+    }
+  }
+  let modifier = getCommercialModifier(count)
+  if (tile.tier1) {
+    tile.tier1.visible = false
+    tile.tier2.visible = false
+    tile.tier3.visible = false
+    tile.tier4.visible = false
+    tile.tier5.visible = false
+    tile.tier6.visible = false
+    tile.tier7.visible = false
+    if (modifier === 1) {
+      tile.tier1.visible = true
+    } else if (modifier === 4) {
+      tile.tier2.visible = true
+    } else if (modifier === 10) {
+      tile.tier3.visible = true
+    } else if (modifier === 20) {
+      tile.tier5.visible = true
+    } else if (modifier === 25) {
+      tile.tier6.visible = true
+    } else if (modifier > 25) {
+      tile.tier7.visible = true
     }
   }
   tile.commercialCount = count
@@ -1081,7 +1111,7 @@ function getCommercialModifier(count) {
     return 20
   } else if (count > 3) {
     return 10
-  } else if (count > 1) {
+  } else if (count > 0) {
     return 4
   }
   return 1
@@ -1100,7 +1130,25 @@ function calcTile(tile, zone, building, resource) {
       tile.buildTimeout = null
       tile.building = building
       tile.container.removeChildren()
-      tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
+
+      tile.tier1 = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
+      tile.container.addChild(tile.tier1)
+
+      if (zone === ZONE_R) {
+        tile.tier2 = new PIXI.Sprite(PIXI.loader.resources['sc_house_small_03'].texture)
+        tile.tier3 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
+        tile.tier4 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
+        tile.tier5 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
+        tile.tier6 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_06'].texture)
+        tile.tier7 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_05'].texture)
+        tile.container.addChild(tile.tier2)
+        tile.container.addChild(tile.tier3)
+        tile.container.addChild(tile.tier4)
+        tile.container.addChild(tile.tier5)
+        tile.container.addChild(tile.tier6)
+        tile.container.addChild(tile.tier7)
+      }
+
 
       if (zone === ZONE_R) {
 
