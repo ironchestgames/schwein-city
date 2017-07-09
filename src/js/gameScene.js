@@ -92,6 +92,13 @@ var isTileTerrainOfType = function (tile, terrainType) {
   return false
 }
 
+var isTileZoneOfType = function (tile, zoneType) {
+  if (tile && tile.zone === zoneType) {
+    return true
+  }
+  return false
+}
+
 var updateRoadTile = function (tile) {
   var c = tile.x
   var r = tile.y
@@ -376,7 +383,7 @@ var gameScene = {
     carsContainer.y = TILE_SIZE / 4
 
     // debug things
-    pathGridContainer.visible = false
+    pathGridContainer.visible = !false
 
     // create the tiles
     tiles = []
@@ -619,7 +626,7 @@ var gameScene = {
       }
     }
     easystar.setGrid(easystarGrid)
-    
+
     // add cars NOTE: test
     for (var i = 0; i < 3; i++) {
       var car = {
@@ -704,12 +711,11 @@ var gameScene = {
       }
     }
 
-    // construct buildings
     calcTile = function(tile, zone, building, resource) {
       if (tile.zone === zone && tile.building === null) {
 
         if (tile.buildTimeout === null) {
-          let times = [100, 150, 200, 250, 300]
+          let times = [1,1,1,1,1] //[100, 150, 200, 250, 300]
           tile.buildTimeout = times[Math.floor(Math.random() * 4)]
         } else {
           tile.buildTimeout--
@@ -732,10 +738,38 @@ var gameScene = {
         }
       }
     }
+
+    // Iterate all tiles and do stuff
     allTiles((tile) => {
+
+      // construct buildings
       calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02'][randomInteger(1)])
+
+      // calculate people
+      if (tile.people && (tile.people.length > 0)) {
+        //console.log('Im a person at tile', tile, ' and i need to go somewhere')
+        for (let kurt = 0; kurt < tile.people.length; kurt++) {
+          allTiles((searchTile) => {
+            if (isTileZoneOfType(searchTile, ZONE_I)) {
+              //console.log(tiles[1][1])
+              //console.log(tiles[0][0])
+              //console.log('found industry at tile', searchTile)
+              //easystar.findPath(tile.x * 2 -1, tile.y * 2 + 1, searchTile.x * 2, searchTile.y * 2, function(path) {
+
+              /*easystar.findPath(0, 0, 1, 2, function(path) {
+                if (path !== null) {
+                  console.log('PATH yes', path)
+                } else {
+                  console.log('PATH no')
+                }
+              })*/
+            }
+          })
+        }
+      }
+
     })
   },
   draw: function () {
