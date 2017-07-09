@@ -762,8 +762,8 @@ var gameScene = {
     allTiles((tile) => {
 
       // construct buildings
-      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
-      calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(2)])
+      calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03', 'sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(5)])
+      calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_commercials_01', 'sc_commercials_02', 'sc_commercials_03'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
       // calculate people

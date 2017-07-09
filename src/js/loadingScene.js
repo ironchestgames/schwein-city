@@ -57,6 +57,10 @@ var loadingScene = {
     .add('sc_house_01_4lev', 'assets/images/sc_house_01_4lev.png')
     .add('sc_house_01_6lev', 'assets/images/sc_house_01_6lev.png')
 
+    .add('sc_commercials_01', 'assets/images/sc_commercials_01.png')
+    .add('sc_commercials_02', 'assets/images/sc_commercials_02.png')
+    .add('sc_commercials_03', 'assets/images/sc_commercials_03.png')
+
     .add('sc_industry_01', 'assets/images/sc_industry_01.png')
     .add('sc_industry_02', 'assets/images/sc_industry_02.png')
     .add('sc_industry_03', 'assets/images/sc_industry_03.png')
