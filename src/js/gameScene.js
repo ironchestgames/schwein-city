@@ -50,7 +50,7 @@ var getGridXY = function (screenX, screenY) {
       screenX / TILE_SIZE))
   var gridY = Math.floor(normalizeRange.limit(
       0,
-      TILE_SIZE * rowCount,
+      rowCount,
       screenY / TILE_SIZE))
   return {
     x: gridX,
