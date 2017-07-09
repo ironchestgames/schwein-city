@@ -187,8 +187,8 @@ var updateRoadTile = function (tile) {
       isTileLeftRoad &&
       !isTileUpRoad) {
     easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT])
-    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT])
-    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT, Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
 
     tile.container.removeChildren()
@@ -199,10 +199,10 @@ var updateRoadTile = function (tile) {
       isTileDownRoad &&
       !isTileLeftRoad &&
       isTileUpRoad) {
-    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP])
+    easystar.setDirectionalCondition(c2, r2, [Easystarjs.TOP, Easystarjs.RIGHT])
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.BOTTOM])
     easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.TOP])
-    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM])
+    easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.BOTTOM, Easystarjs.LEFT])
 
     tile.container.removeChildren()
     tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_02'].texture))
