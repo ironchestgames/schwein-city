@@ -305,6 +305,39 @@ var updateRoadTile = function (tile) {
   }
 }
 
+var updateAdjacentTiles = function (tile) {
+  var c = tile.x
+  var r = tile.y
+
+  var adjacentTile = getTile(c + 1, r)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      updateRoadTile(adjacentTile)
+    }
+  }
+
+  adjacentTile = getTile(c, r + 1)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      updateRoadTile(adjacentTile)
+    }
+  }
+
+  adjacentTile = getTile(c - 1, r)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      updateRoadTile(adjacentTile)
+    }
+  }
+
+  adjacentTile = getTile(c, r - 1)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      updateRoadTile(adjacentTile)
+    }
+  }
+}
+
 var gameScene = {
   name: 'gameScene',
   create: function (sceneParams) {
@@ -493,46 +526,34 @@ var gameScene = {
 
       if (selectedTool == BUTTON_R) {
         tile.zone = ZONE_R
+        tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_residents'].texture))
 
+        updateAdjacentTiles(tile)
+
       } else if (selectedTool == BUTTON_C) {
         tile.zone = ZONE_C
+        tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_commercial'].texture))
 
+        updateAdjacentTiles(tile)
+
       } else if (selectedTool == BUTTON_I) {
         tile.zone = ZONE_I
+        tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_industry'].texture))
+
+        updateAdjacentTiles(tile)
 
       } else if (selectedTool == BUTTON_ROAD) {
         tile.zone = null
         tile.terrain = gameVars.TERRAIN_ROAD
         updateRoadTile(tile)
 
-        var c = tile.x
-        var r = tile.y
-
-        var adjacentTile = getTile(c + 1, r)
-        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-          updateRoadTile(adjacentTile)
-        }
-
-        adjacentTile = getTile(c, r + 1)
-        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-          updateRoadTile(adjacentTile)
-        }
-
-        adjacentTile = getTile(c - 1, r)
-        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-          updateRoadTile(adjacentTile)
-        }
-
-        adjacentTile = getTile(c, r - 1)
-        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-          updateRoadTile(adjacentTile)
-        }
+        updateAdjacentTiles(tile)
 
       }
     })
