@@ -281,7 +281,7 @@ var updateRoadTile = function (tile) {
       isTileUpRoad) {
     easystar.setDirectionalCondition(c2, r2, [Easystarjs.RIGHT, Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2, [Easystarjs.RIGHT, Easystarjs.BOTTOM])
-    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT])
+    easystar.setDirectionalCondition(c2, r2 + 1, [Easystarjs.LEFT, Easystarjs.TOP])
     easystar.setDirectionalCondition(c2 + 1, r2 + 1, [Easystarjs.LEFT])
 
     tile.container.removeChildren()
