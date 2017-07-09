@@ -12,6 +12,7 @@ var loadingScene = {
     .add('forest_1', 'assets/images/forest_1.png')
     .add('road', 'assets/images/road.png')
     .add('person', 'assets/images/person.png')
+    .add('sc_car_01', 'assets/images/sc_car_01.png')
 
     .add('gridpoint', 'assets/images/gridpoint.png')
     

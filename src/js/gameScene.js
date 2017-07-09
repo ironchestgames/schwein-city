@@ -353,10 +353,14 @@ var gameScene = {
         container: new PIXI.Container(),
       }
 
+      var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
+      sprite.x = -sprite.width / 2
+      sprite.y = -sprite.height / 2
+
       car.container.x = car.x / 2 * TILE_SIZE
       car.container.y = car.y / 2 * TILE_SIZE
 
-      car.container.addChild(new PIXI.Sprite(PIXI.loader.resources['person'].texture))
+      car.container.addChild(sprite)
 
       cars.push(car)
 
@@ -420,9 +424,15 @@ var gameScene = {
 
         var angle = Math.atan2(dy, dx)
 
-        // set position
+        // car.x += Math.cos(angle) * speed
+        // car.y += Math.sin(angle) * speed
+
+        // update car image
+        // car.container.x = Math.round(car.x)
+        // car.container.y = Math.round(car.y)
         car.container.x += Math.cos(angle) * speed
         car.container.y += Math.sin(angle) * speed
+        car.container.rotation = angle
 
         // continue path
         var distance = Math.sqrt(dx * dx + dy * dy)
