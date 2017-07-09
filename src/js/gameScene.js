@@ -31,6 +31,7 @@ var easystar
 var easystarGrid
 
 // marker
+var markedTile
 var markerSprite
 
 // tools
@@ -48,6 +49,7 @@ var worldContainer // the world
 var tileContainer // all tiles
 var carsContainer // cars
 var markerContainer // for the mouse marker
+var inputContainer // for the invisible input layers
 var toolsWindowContainer // tools, like RCI and road buttons
 
 var pathGridContainer // for debug
@@ -367,6 +369,7 @@ var gameScene = {
     carsContainer = new PIXI.Container()
     pathGridContainer = new PIXI.Container()
     markerContainer = new PIXI.Container()
+    inputContainer = new PIXI.Container()
     toolsWindowContainer = new PIXI.Container()
 
     // add bg image
@@ -376,12 +379,13 @@ var gameScene = {
     }
 
     // layer order
+    worldContainer.addChild(markerContainer)
     worldContainer.addChild(tileContainer)
     worldContainer.addChild(pathGridContainer)
     worldContainer.addChild(carsContainer)
 
     container.addChild(worldContainer)
-    container.addChild(markerContainer)
+    container.addChild(inputContainer)
     container.addChild(toolsWindowContainer)
 
     global.baseStage.addChild(container)
@@ -497,6 +501,20 @@ var gameScene = {
 
       markerSprite.x = gridPosition.x * TILE_SIZE
       markerSprite.y = gridPosition.y * TILE_SIZE
+
+      let tile = tiles[gridPosition.y][gridPosition.x]
+
+      // unmark old marked tile
+      // TODO: less assuming of the children
+      if (markedTile && markedTile !== tile && markedTile.container && markedTile.container.children[0]) {
+        markedTile.container.children[0].tint = 0xffffff // reset tint
+      }
+
+      // mark new tile
+      markedTile = tile
+      if (markedTile.building || markedTile.terrain === gameVars.TERRAIN_ROAD) {
+        markedTile.container.children[0].tint = 0xffff00
+      }
     })
     inputArea.on('click', function (event) {
       var gridPosition = getGridXY(event.data.global.x, event.data.global.y)
@@ -545,7 +563,7 @@ var gameScene = {
     })
 
     markerContainer.addChild(markerSprite)
-    markerContainer.addChild(inputArea)
+    inputContainer.addChild(inputArea)
 
     // set up tools window
     var toolbarBg = new PIXI.Sprite(PIXI.loader.resources['toolbarbg'].texture)
@@ -635,6 +653,7 @@ var gameScene = {
       }
     }
     easystar.setGrid(easystarGrid)
+
   },
   destroy: function () {
     container.destroy()
@@ -745,7 +764,33 @@ var gameScene = {
       // construct buildings
       calcTile(tile, ZONE_R, BUILDING_R_01, ['sc_house_small_01', 'sc_house_small_02', 'sc_house_small_03'][randomInteger(2)])
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_house_01_2lev', 'sc_house_01_4lev', 'sc_house_01_6lev'][randomInteger(2)])
-      calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02'][randomInteger(1)])
+      calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
+
+      // calculate people
+      if (tile.people && (tile.people.length > 0)) {
+        for (let i = 0; i < tile.people.length ; i++) {
+          let person = tile.people[i]
+          if (person.checkingForState) return;
+
+          allTiles((searchTile) => {
+            if (tile === person.homeTile) {
+              if (isTileZoneOfType(searchTile, ZONE_I)) {
+                person.checkingForState = true
+                person.destination = searchTile
+                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
+              }
+            } else {
+              if (searchTile === person.homeTile) {
+                person.checkingForState = true
+                person.destination = searchTile
+                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
+              }
+            }
+
+          })
+        }
+      }
+>>>>>>> 2b8dec0549375202d1c6bcb63f432b87f9808f0a
     })
   },
   draw: function () {
@@ -770,7 +815,19 @@ function addCar(path, tile, searchTile, person) {
       path: path
     }
     person.car = car
-    var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
+    let resourceName = [
+      'sc_car_01',
+      'sc_car_02',
+      'sc_car_03',
+      'sc_car_04',
+      'sc_car_05',
+      'sc_car_06',
+      'sc_car_07',
+      'sc_car_08',
+      'sc_car_09',
+      'sc_car_10',
+      'sc_car_11'][randomInteger(10)]
+    var sprite = new PIXI.Sprite(PIXI.loader.resources[resourceName].texture)
     sprite.x = -sprite.width / 2
     sprite.y = -sprite.height / 2
 
