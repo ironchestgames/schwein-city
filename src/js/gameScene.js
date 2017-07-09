@@ -14,13 +14,15 @@ var ZONE_R = 'ZONE_R'
 var ZONE_C = 'ZONE_C'
 var ZONE_I = 'ZONE_I'
 
+var BUILDING_R_01 = 'BUILDING_R_01'
+
 // camera
 var VIEW_WIDTH = columnCount * TILE_SIZE
 var VIEW_HEIGHT = rowCount * TILE_SIZE
 
 // cars
 var cars
- 
+
 // pathfinder
 var easystar
 var easystarGrid
@@ -67,6 +69,14 @@ var getGridXY = function (screenX, screenY) {
   return {
     x: gridX,
     y: gridY,
+  }
+}
+
+var allTiles = function(_func) {
+  for (var i = 0; i < tiles.length -1; i++) {
+    for (var j = 0; j < tiles[i].length-1; j++) {
+      _func(tiles[i][j])
+    }
   }
 }
 
@@ -342,6 +352,8 @@ var gameScene = {
           terrain: terrain,
           container: new PIXI.Container(),
           zone: null,
+          buildTimeout: null,
+          building: null
         }
 
         // set tile position
@@ -608,6 +620,25 @@ var gameScene = {
         }
       }
     }
+
+    // construct buildings
+    allTiles((tile) => {
+      if (tile.zone === ZONE_R && tile.building === null) {
+
+        if (tile.buildTimeout === null) {
+          let times = [100, 150, 200, 250, 300]
+          tile.buildTimeout = times[Math.floor(Math.random() * 4)]
+        } else {
+          tile.buildTimeout--
+        }
+        if (tile.buildTimeout <= 0) {
+          tile.buildTimeout = null
+          tile.building = BUILDING_R_01
+          tile.container.removeChildren()
+          tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_house_small_01'].texture))
+        }
+      }
+    })
   },
   draw: function () {
     global.renderer.render(container)
