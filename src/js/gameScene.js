@@ -1045,14 +1045,18 @@ function countCommercialInArea(tile) {
     tile.tier2.visible = false
     tile.tier3.visible = false
     tile.tier4.visible = false
+    tile.tier5.visible = false
+    tile.tier6.visible = false
     if (modifier === 1) {
       tile.tier1.visible = true
     } else if (modifier === 4) {
       tile.tier2.visible = true
     } else if (modifier === 10) {
       tile.tier3.visible = true
-    } else if (modifier > 10) {
-      tile.tier4.visible = true
+    } else if (modifier === 20) {
+      tile.tier5.visible = true
+    } else if (modifier > 20) {
+      tile.tier6.visible = true
     }
   }
   tile.commercialCount = count
@@ -1094,9 +1098,13 @@ function calcTile(tile, zone, building, resource) {
         tile.tier2 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
         tile.tier3 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
         tile.tier4 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
+        tile.tier5 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_06'].texture)
+        tile.tier6 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_05'].texture)
         tile.container.addChild(tile.tier2)
         tile.container.addChild(tile.tier3)
         tile.container.addChild(tile.tier4)
+        tile.container.addChild(tile.tier5)
+        tile.container.addChild(tile.tier6)
       }
 
 
