@@ -22,6 +22,15 @@ var BUILDING_I_01 = 'BUILDING_I_01'
 // people
 var people
 
+var PEOPLE_RESTING = 'PEOPLE_RESTING'
+var PEOPLE_FIND_WORKPLACE = 'PEOPLE_FIND_WORKPLACE'
+var PEOPLE_FINDING_PATH = 'PEOPLE_FINDING_PATH'
+var PEOPLE_DRIVING = 'PEOPLE_DRIVING'
+var PEOPLE_WORKING = 'PEOPLE_WORKING'
+var PEOPLE_NO_PATH = 'PEOPLE_NO_PATH'
+var PEOPLE_GO_TO_WORK = 'PEOPLE_GO_TO_WORK'
+var PEOPLE_GO_HOME = 'PEOPLE_GO_HOME'
+
 // camera
 var VIEW_WIDTH = columnCount * TILE_SIZE
 var VIEW_HEIGHT = rowCount * TILE_SIZE
@@ -658,7 +667,7 @@ var gameScene = {
   destroy: function () {
     container.destroy()
   },
-  update: function () {
+  update: function (dt) {
 
     easystar.calculate()
 
@@ -666,69 +675,143 @@ var gameScene = {
     for (var i = 0; i < people.length; i++) {
 
       let person = people[i]
+      let currentTile = getTile(person.currentTileC, person.currentTileR)
 
-      // decide state
-
-
-      // execute state
-
-      let tile = person.tile
-      // search for a place to go
-      if (person.checkingForState === false && !person.destination) {
-        let prematureExit = false
-        allTiles((searchTile) => {
-          if (prematureExit) return;
-          if (tile === person.homeTile) {
-            if (isTileZoneOfType(searchTile, ZONE_I)) {
-              prematureExit = true
-              person.checkingForState = true
-              person.destination = searchTile
-              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
-            }
-          } else {
-            if (searchTile === person.homeTile) {
-              prematureExit = true
-              person.checkingForState = true
-              person.destination = searchTile
-              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
-            }
-          }
-        })
-      }
-
-      // calculate the car if it has one
-      let car = people[i].car
-      if (car && car.path && car.path.length) {
-        var nextTileInPath = car.path[0]
-        var speed = car.speed
-
-        var dx = nextTileInPath.x / 2 * TILE_SIZE - car.container.x
-        var dy = nextTileInPath.y / 2 * TILE_SIZE - car.container.y
-
-        var angle = Math.atan2(dy, dx)
-
-        // car.x += Math.cos(angle) * speed
-        // car.y += Math.sin(angle) * speed
-
-        // update car image
-        car.container.x += Math.cos(angle) * speed
-        car.container.y += Math.sin(angle) * speed
-        car.container.rotation = angle
-
-        // continue path
-        var distance = Math.sqrt(dx * dx + dy * dy)
-
-        if (distance < speed * 2) {
-          car.path.shift()
-          if (car.path.length == 0) {
-            carsContainer.removeChild(people[i].car.container)
-            //people[i].destination.people.push(people[i])
-            people[i].tile = people[i].destination
-            people[i].car = null
-            people[i].destination = null
-          }
+      let pathCallback = function (path) {
+        if (path === null) {
+          this.state = PEOPLE_NO_PATH
+          console.log(this.state)
+        } else {
+          this.path = path
+          this.destinationTileC = this.wantedDestinationTileC
+          this.destinationTileR = this.wantedDestinationTileR
+          this.state = PEOPLE_DRIVING
+          this.car = createCar(path, this.currentTileC, this.currentTileR, this.carModel)
         }
+      }.bind(person)
+
+      // decide
+      
+
+      // execute
+      switch (person.state) {
+        case PEOPLE_RESTING:
+          person.values.tiredness -= dt
+          if (person.values.tiredness < 0) {
+            person.state = PEOPLE_GO_TO_WORK
+          }
+          break
+
+        case PEOPLE_GO_HOME:
+          person.state = PEOPLE_FINDING_PATH
+            person.wantedDestinationTileC = person.homeTileC
+            person.wantedDestinationTileR = person.homeTileR
+            easystar.findPath(
+                person.currentTileC * 2,
+                person.currentTileR * 2 + 2,
+                person.homeTileC * 2,
+                person.homeTileR * 2 + 2,
+                pathCallback)
+          break
+
+        case PEOPLE_GO_TO_WORK:
+          if (person.hasWorkplace === true) {
+            person.state = PEOPLE_FINDING_PATH
+            person.wantedDestinationTileC = person.workplaceTileC
+            person.wantedDestinationTileR = person.workplaceTileR
+            easystar.findPath(
+                person.currentTileC * 2,
+                person.currentTileR * 2 + 2,
+                person.workplaceTileC * 2,
+                person.workplaceTileR * 2 + 2,
+                pathCallback)
+
+          } else {
+            person.state = PEOPLE_FIND_WORKPLACE
+          }
+          break
+
+        case PEOPLE_FIND_WORKPLACE:
+
+          // find a workplace
+          loop: for (var r = 0; r < tiles.length; r++) {
+            for (var c = 0; c < tiles[r].length; c++) {
+              if (tiles[r][c].building === BUILDING_I_01) {
+                person.hasWorkplace = true
+                person.workplaceTileC = c
+                person.workplaceTileR = r
+                break loop
+              }
+            }
+          }
+
+          // go back to resting
+          person.state = PEOPLE_RESTING
+
+          break
+
+        case PEOPLE_FINDING_PATH:
+          // pass, wait for easystar
+          break
+
+        case PEOPLE_DRIVING:
+          let car = person.car
+          var nextTileInPath = car.path[0]
+          var speed = car.speed
+
+          var dx = nextTileInPath.x / 2 * TILE_SIZE - car.container.x
+          var dy = nextTileInPath.y / 2 * TILE_SIZE - car.container.y
+
+          var angle = Math.atan2(dy, dx)
+
+          // car.x += Math.cos(angle) * speed
+          // car.y += Math.sin(angle) * speed
+
+          // update car image
+          car.container.x += Math.cos(angle) * speed
+          car.container.y += Math.sin(angle) * speed
+          car.container.rotation = angle
+
+          // continue path
+          var distance = Math.sqrt(dx * dx + dy * dy)
+
+          if (distance < speed * 2) {
+            car.path.shift()
+
+            // we have arrived if the path is empty
+            if (car.path.length == 0) {
+
+              // set the current tile
+              person.currentTileC = person.destinationTileC
+              person.currentTileR = person.destinationTileR
+
+              // remove car
+              carsContainer.removeChild(person.car.container)
+              person.car = null
+
+              // change state, TODO: better this
+              let currentTile = getTile(person.currentTileC, person.currentTileR)
+              if (currentTile.building === BUILDING_I_01) {
+                person.state = PEOPLE_WORKING
+              } else if (currentTile.building === BUILDING_R_01) {
+                person.state = PEOPLE_RESTING
+              }
+              // NOTE: add the rest of building types
+            }
+          }
+          break
+
+        case PEOPLE_WORKING:
+          person.values.tiredness += dt
+          if (person.values.tiredness > 4000) {
+            person.state = PEOPLE_GO_HOME
+          }
+          break
+
+        case PEOPLE_NO_PATH:
+          break
       }
+
     }
 
     calcTile = function(tile, zone, building, resource) {
@@ -750,12 +833,23 @@ var gameScene = {
 
             // people definition
             let moverIn = {
-              homeTile: tile,
-              happiness: 0,
-              checkingForState: false,
+              homeTileC: tile.x,
+              homeTileR: tile.y,
               car: null,
               carModel: randomInteger(10),
-              tile: tile
+              currentTileC: tile.x,
+              currentTileR: tile.y,
+
+              hasWorkplace: false,
+              workplaceTileC: null,
+              workplaceTileR: null,
+
+              state: PEOPLE_RESTING,
+              
+              // simulation values (in ms)
+              values: {
+                tiredness: 2000,
+              },
             }
             console.log(tile)
             people.push(moverIn)
@@ -779,48 +873,42 @@ var gameScene = {
   },
 }
 
-function addCar(path, tile, searchTile, person) {
-  person.checkingForState = false
-  if (path === null) {
-    person.destination = null
-  } else {
-    person.tile = null
-    //tile.people = []
-
-    // car definition
-    var car = {
-      x: tile.x * 2,
-      y: (tile.y * 2) + 2,
-      targetX: (searchTile.x * 2),
-      targetY: (searchTile.y * 2) + 2,
-      speed: 0.5 + randomInteger(1, 10) / 10,
-      container: new PIXI.Container(),
-      path: path
-    }
-    person.car = car
-    let resourceName = [
-      'sc_car_01',
-      'sc_car_02',
-      'sc_car_03',
-      'sc_car_04',
-      'sc_car_05',
-      'sc_car_06',
-      'sc_car_07',
-      'sc_car_08',
-      'sc_car_09',
-      'sc_car_10',
-      'sc_car_11'][person.carModel]
-    var sprite = new PIXI.Sprite(PIXI.loader.resources[resourceName].texture)
-    sprite.x = -sprite.width / 2
-    sprite.y = -sprite.height / 2
-
-    car.container.x = car.x / 2 * TILE_SIZE
-    car.container.y = car.y / 2 * TILE_SIZE
-
-    car.container.addChild(sprite)
-
-    carsContainer.addChild(car.container)
+function createCar(path, tileC, tileR, carModel) {
+  
+  // car definition
+  var car = {
+    x: tileC * 2,
+    y: (tileR * 2) + 2,
+    speed: 0.5 + randomInteger(1, 10) / 10,
+    container: new PIXI.Container(),
+    path: path
   }
+
+  let resourceName = [
+    'sc_car_01',
+    'sc_car_02',
+    'sc_car_03',
+    'sc_car_04',
+    'sc_car_05',
+    'sc_car_06',
+    'sc_car_07',
+    'sc_car_08',
+    'sc_car_09',
+    'sc_car_10',
+    'sc_car_11'][carModel]
+
+  var sprite = new PIXI.Sprite(PIXI.loader.resources[resourceName].texture)
+  sprite.x = -sprite.width / 2
+  sprite.y = -sprite.height / 2
+
+  car.container.x = car.x / 2 * TILE_SIZE
+  car.container.y = car.y / 2 * TILE_SIZE
+
+  car.container.addChild(sprite)
+
+  carsContainer.addChild(car.container)
+
+  return car
 }
 
 module.exports = gameScene
