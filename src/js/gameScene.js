@@ -819,14 +819,16 @@ var gameScene = {
           // save path to buildings
           {
             let departureTile = getTile(this.currentTileC, this.currentTileR)
-            departureTile.latestPaths.unshift({
-              path: JSON.parse(JSON.stringify(path)), // TODO: optimize here
-              // TODO: add energy cost
-            })
+            if (departureTile.building !== null) {
+              departureTile.latestPaths.unshift({
+                path: JSON.parse(JSON.stringify(path)), // TODO: optimize here
+                // TODO: add energy cost
+              })
 
-            // keep the array at a reasonable length
-            while (departureTile.latestPaths.length > MAX_LATEST_PATHS) {
-              departureTile.latestPaths.pop()
+              // keep the array at a reasonable length
+              while (departureTile.latestPaths.length > MAX_LATEST_PATHS) {
+                departureTile.latestPaths.pop()
+              }
             }
 
           }
@@ -850,27 +852,35 @@ var gameScene = {
 
         case PEOPLE_GO_HOME:
           person.state = PEOPLE_FINDING_PATH
-            person.wantedDestinationTileC = person.homeTileC
-            person.wantedDestinationTileR = person.homeTileR
-            easystar.findPath(
-                person.currentTileC * 2,
-                person.currentTileR * 2 + 2,
-                person.homeTileC * 2,
-                person.homeTileR * 2 + 2,
-                pathCallback)
+          person.wantedDestinationTileC = person.homeTileC
+          person.wantedDestinationTileR = person.homeTileR
+          easystar.findPath(
+              person.currentTileC * 2,
+              person.currentTileR * 2 + 2,
+              person.homeTileC * 2,
+              person.homeTileR * 2 + 2,
+              pathCallback)
           break
 
         case PEOPLE_GO_TO_WORK:
           if (person.hasWorkplace === true) {
-            person.state = PEOPLE_FINDING_PATH
-            person.wantedDestinationTileC = person.workplaceTileC
-            person.wantedDestinationTileR = person.workplaceTileR
-            easystar.findPath(
-                person.currentTileC * 2,
-                person.currentTileR * 2 + 2,
-                person.workplaceTileC * 2,
-                person.workplaceTileR * 2 + 2,
-                pathCallback)
+
+            // no building on tile find new workplace
+            if (getTile(person.workplaceTileC, person.workplaceTileR).building === null) {
+              person.hasWorkplace = false
+              person.state = PEOPLE_FIND_WORKPLACE
+
+            } else {
+              person.state = PEOPLE_FINDING_PATH
+              person.wantedDestinationTileC = person.workplaceTileC
+              person.wantedDestinationTileR = person.workplaceTileR
+              easystar.findPath(
+                  person.currentTileC * 2,
+                  person.currentTileR * 2 + 2,
+                  person.workplaceTileC * 2,
+                  person.workplaceTileR * 2 + 2,
+                  pathCallback)
+            }
 
           } else {
             person.state = PEOPLE_FIND_WORKPLACE
@@ -967,8 +977,21 @@ var gameScene = {
                 person.state = PEOPLE_WORKING
               } else if (currentTile.building === BUILDING_R_01) {
                 person.state = PEOPLE_RESTING
+
+              // if building is gone
+              } else {
+
+                // remove person if no home
+                if (getTile(person.homeTileC, person.homeTileR).building === null) {
+                  person.removeMe = true
+                }
+
+                // no workplace, find new workplace
+                if (getTile(person.workplaceTileC, person.workplaceTileR).building === null) {
+                  person.hasWorkplace = false
+                  person.state = PEOPLE_GO_HOME
+                }
               }
-              // NOTE: add the rest of building types
             }
           }
           break
@@ -999,6 +1022,17 @@ var gameScene = {
           break
       }
 
+    }
+
+    // remove houseless people
+    for(var i = people.length - 1; i >= 0; i--) {
+      let person = people[i]
+      if(person.removeMe) {
+        if (person.car && person.car.container) {
+          person.car.container.destroy()
+        }
+        people.splice(i, 1)
+      }
     }
 
     // Iterate all tiles and do stuff
