@@ -313,6 +313,14 @@ var updateRoadTile = function (tile) {
     tile.container.removeChildren()
     tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_road_02'].texture))
   }
+
+
+  easystarGrid[r * 2][c * 2] = tile.terrain
+  easystarGrid[r * 2][c * 2 + 1] = tile.terrain
+  easystarGrid[r * 2 + 1][c * 2] = tile.terrain
+  easystarGrid[r * 2 + 1][c * 2 + 1] = tile.terrain
+
+  easystar.setGrid(easystarGrid)
 }
 
 var updateAdjacentTiles = function (tile) {
@@ -715,12 +723,11 @@ var gameScene = {
       if (tile.people && (tile.people.length > 0)) {
         for (let i = 0; i < tile.people.length ; i++) {
           let person = tile.people[i]
-          if (person.checkingForState) return;
+          if (person.checkingForState || person.destination) return;
 
           allTiles((searchTile) => {
             if (tile === person.homeTile) {
               if (isTileZoneOfType(searchTile, ZONE_I)) {
-                console.log('imma go to werrkkk')
                 person.checkingForState = true
                 person.destination = searchTile
                 easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
@@ -744,7 +751,10 @@ var gameScene = {
 }
 
 function addCar(path, tile, searchTile, person) {
-  if (path !== null) {
+  person.checkingForState = false
+  if (path === null) {
+    person.destination = null
+  } else {
     tile.people = []
     var car = {
       x: tile.x * 2,
@@ -767,8 +777,6 @@ function addCar(path, tile, searchTile, person) {
 
     carsContainer.addChild(car.container)
   }
-  person.checkingForState = false
-  person.destination = null
 }
 
 module.exports = gameScene
