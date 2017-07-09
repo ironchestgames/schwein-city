@@ -469,47 +469,6 @@ var gameScene = {
     // create cars
     cars = []
 
-    // add cars NOTE: test
-    // for (var i = 0; i < 3; i++) {
-    //   var car = {
-    //     // x: randomInteger(0, columnCount * 2 - 1),
-    //     // y: randomInteger(0, rowCount * 2 - 1),
-    //     // targetX: randomInteger(0, columnCount * 2 - 1),
-    //     // targetY: randomInteger(0, rowCount * 2 - 1),
-    //     x: 0,
-    //     y: 0,
-    //     targetX: 1,
-    //     targetY: 4,
-    //     speed: 0.5 + randomInteger(1, 10) / 10,
-    //     container: new PIXI.Container(),
-    //   }
-
-    //   var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
-    //   sprite.x = -sprite.width / 2
-    //   sprite.y = -sprite.height / 2
-
-    //   car.container.x = car.x / 2 * TILE_SIZE
-    //   car.container.y = car.y / 2 * TILE_SIZE
-
-    //   car.container.addChild(sprite)
-
-    //   cars.push(car)
-
-    //   carsContainer.addChild(car.container)
-    // }
-
-    // cars test
-    // for (var i = 0; i < cars.length; i++) {
-    //   var car = cars[i]
-    //   easystar.findPath(car.x, car.y, car.targetX, car.targetY, function(path) {
-    //     if (path !== null) {
-    //       this.path = path
-    //     } else {
-    //       console.log('NO PATH')
-    //     }
-    //   }.bind(car))
-    // }
-
     // set up mouse marker
     markerSprite = new PIXI.Sprite(PIXI.loader.resources['marker'].texture)
 
@@ -632,6 +591,10 @@ var gameScene = {
             if (presetValue === 'x') {
               let tile = tiles[r][c]
               tile.terrain = gameVars.TERRAIN_ROAD
+              easystarGrid[r * 2][c * 2] = tile.terrain
+              easystarGrid[r * 2][c * 2 + 1] = tile.terrain
+              easystarGrid[r * 2 + 1][c * 2] = tile.terrain
+              easystarGrid[r * 2 + 1][c * 2 + 1] = tile.terrain
               updateRoadTile(tile)
               updateAdjacentTiles(tile)
 
@@ -645,7 +608,48 @@ var gameScene = {
         }
       }
     }
+    easystar.setGrid(easystarGrid)
     
+    // add cars NOTE: test
+    for (var i = 0; i < 3; i++) {
+      var car = {
+        // x: randomInteger(0, columnCount * 2 - 1),
+        // y: randomInteger(0, rowCount * 2 - 1),
+        // targetX: randomInteger(0, columnCount * 2 - 1),
+        // targetY: randomInteger(0, rowCount * 2 - 1),
+        x: 0,
+        y: 0,
+        targetX: 1,
+        targetY: 1,
+        speed: 0.5 + randomInteger(1, 10) / 10,
+        container: new PIXI.Container(),
+      }
+
+      var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
+      sprite.x = -sprite.width / 2
+      sprite.y = -sprite.height / 2
+
+      car.container.x = car.x / 2 * TILE_SIZE
+      car.container.y = car.y / 2 * TILE_SIZE
+
+      car.container.addChild(sprite)
+
+      cars.push(car)
+
+      carsContainer.addChild(car.container)
+    }
+
+    // cars test
+    for (var i = 0; i < cars.length; i++) {
+      var car = cars[i]
+      easystar.findPath(car.x, car.y, car.targetX, car.targetY, function(path) {
+        if (path !== null) {
+          this.path = path
+        } else {
+          console.log('NO PATH')
+        }
+      }.bind(car))
+    }
 
   },
   destroy: function () {
