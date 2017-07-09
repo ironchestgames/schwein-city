@@ -745,7 +745,7 @@ var gameScene = {
       let currentTile = getTile(person.currentTileC, person.currentTileR)
 
       let pathCallback = function (path) {
-        if (path === null) {
+        if (path === null || path.length === 0) {
           this.state = PEOPLE_NO_PATH
           this.timer = 4000
         } else {
@@ -896,7 +896,8 @@ var gameScene = {
           person.timer -= dt
           if (person.timer < 0) {
             person.timer = null
-            person.state = PEOPLE_GO_TO_WORK
+            person.state = (person.currentTileC === person.homeTileC && person.currentTileR === person.homeTileR) ?
+              PEOPLE_GO_TO_WORK : PEOPLE_GO_HOME;
           }
 
           break
