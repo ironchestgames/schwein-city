@@ -4,6 +4,9 @@ var normalizeRange = require('normalize-range')
 var gameVars = require('./gameVars')
 var presetMap = require('./presetMap')
 
+const BNP_GLOBAL_DEDUCTION = 0.001
+const BNP_WORKER_ADDITION = 0.004
+
 // tile variables
 var TILE_SIZE = 32
 var tiles
@@ -21,6 +24,9 @@ var BUILDING_I_01 = 'BUILDING_I_01'
 
 // people
 var people
+
+// BNP
+var bnp
 
 var PEOPLE_RESTING = 'PEOPLE_RESTING'
 var PEOPLE_FIND_WORKPLACE = 'PEOPLE_FIND_WORKPLACE'
@@ -60,6 +66,9 @@ var carsContainer // cars
 var markerContainer // for the mouse marker
 var inputContainer // for the invisible input layers
 var toolsWindowContainer // tools, like RCI and road buttons
+
+// Pixi handles for updating graphics
+var bnpText
 
 var pathGridContainer // for debug
 
@@ -455,6 +464,9 @@ var gameScene = {
     people = []
     window.people = people // NOTE: for debugging
 
+    // init pnp
+    bnp = 0.0
+
     // init easystar
     easystar = new Easystarjs.js()
     easystarGrid = []
@@ -665,6 +677,16 @@ var gameScene = {
     })
     toolsWindowContainer.addChild(buttonSelection)
 
+    var bnpLabel = new PIXI.Text("BNP:", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
+    bnpLabel.x = 5
+    bnpLabel.y = buttonSelection.height * 5
+    toolsWindowContainer.addChild(bnpLabel)
+
+    bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
+    bnpText.x = 5
+    bnpText.y = buttonSelection.height * 5 + 10
+    toolsWindowContainer.addChild(bnpText)
+
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
 
     // load preset map, NOTE: for dev
@@ -725,7 +747,7 @@ var gameScene = {
       let pathCallback = function (path) {
         if (path === null) {
           this.state = PEOPLE_NO_PATH
-          console.log(this.state)
+          this.timer = 4000
         } else {
 
           // save path to buildings
@@ -752,10 +774,6 @@ var gameScene = {
         }
       }.bind(person)
 
-      // decide
-      
-
-      // execute
       switch (person.state) {
         case PEOPLE_RESTING:
           person.values.tiredness -= dt
@@ -865,59 +883,25 @@ var gameScene = {
 
         case PEOPLE_WORKING:
           person.values.tiredness += dt
+          bnp = bnp + BNP_WORKER_ADDITION
           if (person.values.tiredness > 4000) {
             person.state = PEOPLE_GO_HOME
           }
           break
 
         case PEOPLE_NO_PATH:
+          if (person.timer === null)
+            console.error("Set a timer ya dingus")
+
+          person.timer -= dt
+          if (person.timer < 0) {
+            person.timer = null
+            person.state = PEOPLE_GO_TO_WORK
+          }
+
           break
       }
 
-    }
-
-    calcTile = function(tile, zone, building, resource) {
-      if (tile.zone === zone && tile.building === null) {
-
-        if (tile.buildTimeout === null) {
-          let times = [1,1,1,1,1] //[100, 150, 200, 250, 300]
-          tile.buildTimeout = times[Math.floor(Math.random() * 4)]
-        } else {
-          tile.buildTimeout--
-        }
-        if (tile.buildTimeout <= 0) {
-          tile.buildTimeout = null
-          tile.building = building
-          tile.container.removeChildren()
-          tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
-
-          if (zone === ZONE_R) {
-
-            // people definition
-            let moverIn = {
-              homeTileC: tile.x,
-              homeTileR: tile.y,
-              car: null,
-              carModel: randomInteger(10),
-              currentTileC: tile.x,
-              currentTileR: tile.y,
-
-              hasWorkplace: false,
-              workplaceTileC: null,
-              workplaceTileR: null,
-
-              state: PEOPLE_RESTING,
-              
-              // simulation values (in ms)
-              values: {
-                tiredness: 2000,
-              },
-            }
-            console.log(tile)
-            people.push(moverIn)
-          }
-        }
-      }
     }
 
     // Iterate all tiles and do stuff
@@ -929,14 +913,66 @@ var gameScene = {
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
     })
+
+
+    // Global BNP deduction
+    bnp = Math.max(0, bnp - BNP_GLOBAL_DEDUCTION)
+
+    // Update BNP text
+    bnpText.text = (Math.round(bnp * 100) / 100)
   },
   draw: function () {
     global.renderer.render(container)
   },
 }
 
+calcTile = function(tile, zone, building, resource) {
+  if (tile.zone === zone && tile.building === null) {
+
+    if (tile.buildTimeout === null) {
+      let times = [1,1,1,1,1] //[100, 150, 200, 250, 300]
+      tile.buildTimeout = times[Math.floor(Math.random() * 4)]
+    } else {
+      tile.buildTimeout--
+    }
+    if (tile.buildTimeout <= 0) {
+      tile.buildTimeout = null
+      tile.building = building
+      tile.container.removeChildren()
+      tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
+
+      if (zone === ZONE_R) {
+
+        // people definition
+        let moverIn = {
+          homeTileC: tile.x,
+          homeTileR: tile.y,
+          car: null,
+          carModel: randomInteger(10),
+          currentTileC: tile.x,
+          currentTileR: tile.y,
+
+          hasWorkplace: false,
+          workplaceTileC: null,
+          workplaceTileR: null,
+
+          timer: null,
+
+          state: PEOPLE_RESTING,
+
+          // simulation values (in ms)
+          values: {
+            tiredness: 2000,
+          },
+        }
+        people.push(moverIn)
+      }
+    }
+  }
+}
+
 function createCar(path, tileC, tileR, carModel) {
-  
+
   // car definition
   var car = {
     x: tileC * 2,
