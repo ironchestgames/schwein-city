@@ -8,6 +8,10 @@ var loadingScene = {
     PIXI.loader
 
     .add('marker', 'assets/images/marker.png')
+    .add('buttonR', 'assets/images/buttonR.png')
+    .add('buttonC', 'assets/images/buttonC.png')
+    .add('buttonI', 'assets/images/buttonI.png')
+    .add('buttonRoad', 'assets/images/buttonRoad.png')
 
     .add('forest_1', 'assets/images/forest_1.png')
     .add('road', 'assets/images/road.png')
@@ -25,6 +29,10 @@ var loadingScene = {
     .add('sc_road_04', 'assets/images/sc_road_04.png')
     .add('sc_road_05', 'assets/images/sc_road_05.png')
     .add('sc_road_06', 'assets/images/sc_road_06.png')
+
+    .add('sc_zone_residents', 'assets/images/sc_zone_residents.png')
+    .add('sc_zone_commercial', 'assets/images/sc_zone_commercial.png')
+    .add('sc_zone_industry', 'assets/images/sc_zone_industry.png')
 
     .add('gridpoint', 'assets/images/gridpoint.png')
     

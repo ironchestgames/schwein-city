@@ -4,11 +4,15 @@ var normalizeRange = require('normalize-range')
 var gameVars = require('./gameVars')
 
 // tile variables
-var rowCount = 10
-var columnCount = 3
-
 var TILE_SIZE = 32
 var tiles
+
+var rowCount = 768 / TILE_SIZE
+var columnCount = 1024 / TILE_SIZE
+
+var ZONE_R = 'ZONE_R'
+var ZONE_C = 'ZONE_C'
+var ZONE_I = 'ZONE_I'
 
 // camera
 var VIEW_WIDTH = columnCount * TILE_SIZE
@@ -24,12 +28,20 @@ var easystarGrid
 // marker
 var markerSprite
 
+// tools
+var BUTTON_R = 'BUTTON_R'
+var BUTTON_C = 'BUTTON_C'
+var BUTTON_I = 'BUTTON_I'
+var BUTTON_ROAD = 'BUTTON_ROAD'
+var selectedTool // one of the RCI above
+
 // pixi containers
 var container // container of the whole scene
 var worldContainer // the world
 var tileContainer // all tiles
 var carsContainer // cars
 var markerContainer // for the mouse marker
+var toolsWindowContainer // tools, like RCI and road buttons
 
 var pathGridContainer // for debug
 
@@ -46,11 +58,11 @@ var getTile = function (x, y) {
 var getGridXY = function (screenX, screenY) {
   var gridX = Math.floor(normalizeRange.limit(
       0,
-      columnCount,
+      columnCount - 1,
       screenX / TILE_SIZE))
   var gridY = Math.floor(normalizeRange.limit(
       0,
-      rowCount,
+      rowCount - 1,
       screenY / TILE_SIZE))
   return {
     x: gridX,
@@ -271,19 +283,22 @@ var gameScene = {
     carsContainer = new PIXI.Container()
     pathGridContainer = new PIXI.Container()
     markerContainer = new PIXI.Container()
+    toolsWindowContainer = new PIXI.Container()
 
     // layer order
     worldContainer.addChild(tileContainer)
     worldContainer.addChild(pathGridContainer)
     worldContainer.addChild(carsContainer)
 
-    carsContainer.x = TILE_SIZE / 4
-    carsContainer.y = TILE_SIZE / 4
-
     container.addChild(worldContainer)
     container.addChild(markerContainer)
+    container.addChild(toolsWindowContainer)
 
     global.baseStage.addChild(container)
+
+    // offset the cars
+    carsContainer.x = TILE_SIZE / 4
+    carsContainer.y = TILE_SIZE / 4
 
     // debug things
     pathGridContainer.visible = false
@@ -309,6 +324,7 @@ var gameScene = {
           y: r,
           terrain: terrain,
           container: new PIXI.Container(),
+          zone: null,
         }
 
         // set tile position
@@ -436,13 +452,91 @@ var gameScene = {
     })
     inputArea.on('click', function (event) {
       var gridPosition = getGridXY(event.data.global.x, event.data.global.y)
+      var tile = tiles[gridPosition.y][gridPosition.x]
 
-      tiles[gridPosition.y][gridPosition.x].container.alpha = 0.5 // TODO: something vettigt
+console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
+      if (selectedTool == BUTTON_R) {
+        tile.zone = ZONE_R
+        tile.container.removeChildren()
+        tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_residents'].texture))
+
+      } else if (selectedTool == BUTTON_C) {
+        tile.zone = ZONE_C
+        tile.container.removeChildren()
+        tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_commercial'].texture))
+
+      } else if (selectedTool == BUTTON_I) {
+        tile.zone = ZONE_I
+        tile.container.removeChildren()
+        tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_industry'].texture))
+
+      } else if (selectedTool == BUTTON_ROAD) {
+        tile.zone = null
+        tile.terrain = gameVars.TERRAIN_ROAD
+        updateRoadTile(tile)
+
+        var c = tile.x
+        var r = tile.y
+
+        var adjacentTile = getTile(c + 1, r)
+        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+          updateRoadTile(adjacentTile)
+        }
+
+        adjacentTile = getTile(c, r + 1)
+        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+          updateRoadTile(adjacentTile)
+        }
+
+        adjacentTile = getTile(c - 1, r)
+        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+          updateRoadTile(adjacentTile)
+        }
+
+        adjacentTile = getTile(c, r - 1)
+        if (adjacentTile && isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+          updateRoadTile(adjacentTile)
+        }
+
+      }
     })
-
 
     markerContainer.addChild(markerSprite)
     markerContainer.addChild(inputArea)
+
+    // set up tools window
+    var buttonR = new PIXI.Sprite(PIXI.loader.resources['buttonR'].texture)
+    buttonR.interactive = true
+    buttonR.on('click', function (event) {
+      selectedTool = BUTTON_R
+    })
+    toolsWindowContainer.addChild(buttonR)
+
+    var buttonC = new PIXI.Sprite(PIXI.loader.resources['buttonC'].texture)
+    buttonC.interactive = true
+    buttonC.y = buttonC.height
+    buttonC.on('click', function (event) {
+      selectedTool = BUTTON_C
+    })
+    toolsWindowContainer.addChild(buttonC)
+
+    var buttonI = new PIXI.Sprite(PIXI.loader.resources['buttonI'].texture)
+    buttonI.interactive = true
+    buttonI.y = buttonI.height * 2
+    buttonI.on('click', function (event) {
+      selectedTool = BUTTON_I
+    })
+    toolsWindowContainer.addChild(buttonI)
+
+    var buttonRoad = new PIXI.Sprite(PIXI.loader.resources['buttonRoad'].texture)
+    buttonRoad.interactive = true
+    buttonRoad.y = buttonRoad.height * 3
+    buttonRoad.on('click', function (event) {
+      selectedTool = BUTTON_ROAD
+    })
+    toolsWindowContainer.addChild(buttonRoad)
+
+    toolsWindowContainer.x = 550
 
 
   },
