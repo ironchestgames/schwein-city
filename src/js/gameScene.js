@@ -625,7 +625,6 @@ var gameScene = {
         tile.zone = null
         tile.building = null
         tile.terrain = gameVars.TERRAIN_FOREST
-        tileContainer.removeChild(tile.container)
         tile.container.removeChildren()
         let c2 = tile.x * 2
         let r2 = tile.y * 2
