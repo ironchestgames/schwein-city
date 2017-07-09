@@ -756,7 +756,8 @@ var gameScene = {
               //console.log(tiles[1][1])
               //console.log(tiles[0][0])
               //console.log('found industry at tile', searchTile)
-              easystar.findPath((tile.x * 2) - 1, (tile.y * 2) - 1, (searchTile.x * 2) - 1, (searchTile.y * 2) - 1, function(path) {
+              console.log(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2)
+              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, function(path) {
 
               //easystar.findPath(0, 0, 1, 2, function(path) {
                 if (path !== null) {
