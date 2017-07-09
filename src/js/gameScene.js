@@ -31,6 +31,7 @@ var easystar
 var easystarGrid
 
 // marker
+var markedTile
 var markerSprite
 
 // tools
@@ -48,6 +49,7 @@ var worldContainer // the world
 var tileContainer // all tiles
 var carsContainer // cars
 var markerContainer // for the mouse marker
+var inputContainer // for the invisible input layers
 var toolsWindowContainer // tools, like RCI and road buttons
 
 var pathGridContainer // for debug
@@ -352,6 +354,7 @@ var gameScene = {
     carsContainer = new PIXI.Container()
     pathGridContainer = new PIXI.Container()
     markerContainer = new PIXI.Container()
+    inputContainer = new PIXI.Container()
     toolsWindowContainer = new PIXI.Container()
 
     // add bg image
@@ -361,12 +364,13 @@ var gameScene = {
     }
 
     // layer order
+    worldContainer.addChild(markerContainer)
     worldContainer.addChild(tileContainer)
     worldContainer.addChild(pathGridContainer)
     worldContainer.addChild(carsContainer)
 
     container.addChild(worldContainer)
-    container.addChild(markerContainer)
+    container.addChild(inputContainer)
     container.addChild(toolsWindowContainer)
 
     global.baseStage.addChild(container)
@@ -481,6 +485,20 @@ var gameScene = {
 
       markerSprite.x = gridPosition.x * TILE_SIZE
       markerSprite.y = gridPosition.y * TILE_SIZE
+
+      let tile = tiles[gridPosition.y][gridPosition.x]
+
+      // unmark old marked tile
+      // TODO: less assuming of the children
+      if (markedTile && markedTile !== tile && markedTile.container && markedTile.container.children[0]) {
+        markedTile.container.children[0].tint = 0xffffff // reset tint
+      }
+
+      // mark new tile
+      markedTile = tile
+      if (markedTile.building || markedTile.terrain === gameVars.TERRAIN_ROAD) {
+        markedTile.container.children[0].tint = 0xffff00
+      }
     })
     inputArea.on('click', function (event) {
       var gridPosition = getGridXY(event.data.global.x, event.data.global.y)
@@ -529,7 +547,7 @@ var gameScene = {
     })
 
     markerContainer.addChild(markerSprite)
-    markerContainer.addChild(inputArea)
+    inputContainer.addChild(inputArea)
 
     // set up tools window
     var toolbarBg = new PIXI.Sprite(PIXI.loader.resources['toolbarbg'].texture)
