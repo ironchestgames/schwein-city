@@ -331,7 +331,8 @@ var gameScene = {
     for (var r = 0; r < rowCount; r++) {
       tiles[r] = []
 
-      for (var c = 0; c < columnCount; c++) {
+      // NOTE: backwards because top right tile sprite should be furthest to the back...
+      for (var c = columnCount - 1; c >= 0; c--) {
 
         var terrain = gameVars.TERRAIN_FOREST
         var texture = new PIXI.Sprite(PIXI.loader.resources['forest_1'].texture)
@@ -359,7 +360,7 @@ var gameScene = {
 
         tileContainer.addChild(tile.container)
 
-        tiles[r][c] = tile
+        tiles[r].unshift(tile) // NOTE: ...but still have the tiles in correct order left-to-right
       }
     }
 
