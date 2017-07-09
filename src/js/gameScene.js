@@ -22,6 +22,9 @@ var BUILDING_I_01 = 'BUILDING_I_01'
 // people
 var people
 
+// BNP
+var bnp
+
 var PEOPLE_RESTING = 'PEOPLE_RESTING'
 var PEOPLE_FIND_WORKPLACE = 'PEOPLE_FIND_WORKPLACE'
 var PEOPLE_FINDING_PATH = 'PEOPLE_FINDING_PATH'
@@ -448,6 +451,9 @@ var gameScene = {
     people = []
     window.people = people // NOTE: for debugging
 
+    // init pnp
+    bnp = 0
+
     // init easystar
     easystar = new Easystarjs.js()
     easystarGrid = []
@@ -697,7 +703,7 @@ var gameScene = {
       }.bind(person)
 
       // decide
-      
+
 
       // execute
       switch (person.state) {
@@ -820,50 +826,6 @@ var gameScene = {
 
     }
 
-    calcTile = function(tile, zone, building, resource) {
-      if (tile.zone === zone && tile.building === null) {
-
-        if (tile.buildTimeout === null) {
-          let times = [1,1,1,1,1] //[100, 150, 200, 250, 300]
-          tile.buildTimeout = times[Math.floor(Math.random() * 4)]
-        } else {
-          tile.buildTimeout--
-        }
-        if (tile.buildTimeout <= 0) {
-          tile.buildTimeout = null
-          tile.building = building
-          tile.container.removeChildren()
-          tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
-
-          if (zone === ZONE_R) {
-
-            // people definition
-            let moverIn = {
-              homeTileC: tile.x,
-              homeTileR: tile.y,
-              car: null,
-              carModel: randomInteger(10),
-              currentTileC: tile.x,
-              currentTileR: tile.y,
-
-              hasWorkplace: false,
-              workplaceTileC: null,
-              workplaceTileR: null,
-
-              state: PEOPLE_RESTING,
-              
-              // simulation values (in ms)
-              values: {
-                tiredness: 2000,
-              },
-            }
-            console.log(tile)
-            people.push(moverIn)
-          }
-        }
-      }
-    }
-
     // Iterate all tiles and do stuff
     allTiles((tile) => {
 
@@ -879,8 +841,51 @@ var gameScene = {
   },
 }
 
+calcTile = function(tile, zone, building, resource) {
+  if (tile.zone === zone && tile.building === null) {
+
+    if (tile.buildTimeout === null) {
+      let times = [1,1,1,1,1] //[100, 150, 200, 250, 300]
+      tile.buildTimeout = times[Math.floor(Math.random() * 4)]
+    } else {
+      tile.buildTimeout--
+    }
+    if (tile.buildTimeout <= 0) {
+      tile.buildTimeout = null
+      tile.building = building
+      tile.container.removeChildren()
+      tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
+
+      if (zone === ZONE_R) {
+
+        // people definition
+        let moverIn = {
+          homeTileC: tile.x,
+          homeTileR: tile.y,
+          car: null,
+          carModel: randomInteger(10),
+          currentTileC: tile.x,
+          currentTileR: tile.y,
+
+          hasWorkplace: false,
+          workplaceTileC: null,
+          workplaceTileR: null,
+
+          state: PEOPLE_RESTING,
+
+          // simulation values (in ms)
+          values: {
+            tiredness: 2000,
+          },
+        }
+        people.push(moverIn)
+      }
+    }
+  }
+}
+
 function createCar(path, tileC, tileR, carModel) {
-  
+
   // car definition
   var car = {
     x: tileC * 2,
