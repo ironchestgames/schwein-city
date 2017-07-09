@@ -530,6 +530,7 @@ var gameScene = {
 
       if (selectedTool == BUTTON_R) {
         tile.zone = ZONE_R
+        tile.building = null
         tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_residents'].texture))
@@ -538,6 +539,7 @@ var gameScene = {
 
       } else if (selectedTool == BUTTON_C) {
         tile.zone = ZONE_C
+        tile.building = null
         tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_commercial'].texture))
@@ -546,6 +548,7 @@ var gameScene = {
 
       } else if (selectedTool == BUTTON_I) {
         tile.zone = ZONE_I
+        tile.building = null
         tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_industry'].texture))
@@ -554,6 +557,7 @@ var gameScene = {
 
       } else if (selectedTool == BUTTON_ROAD) {
         tile.zone = null
+        tile.building = null
         tile.terrain = gameVars.TERRAIN_ROAD
         updateRoadTile(tile)
 
