@@ -7,6 +7,8 @@ var loadingScene = {
     // fetch assets
     PIXI.loader
 
+    .add('marker', 'assets/images/marker.png')
+
     .add('forest_1', 'assets/images/forest_1.png')
     .add('road', 'assets/images/road.png')
     .add('person', 'assets/images/person.png')

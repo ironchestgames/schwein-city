@@ -10,6 +10,10 @@ var columnCount = 4
 var TILE_SIZE = 32
 var tiles
 
+// camera
+var VIEW_WIDTH = columnCount * TILE_SIZE
+var VIEW_HEIGHT = rowCount * TILE_SIZE
+
 // cars
 var cars
  
@@ -17,10 +21,15 @@ var cars
 var easystar
 var easystarGrid
 
+// marker
+var markerSprite
+
+// pixi containers
 var container // container of the whole scene
 var worldContainer // the world
 var tileContainer // all tiles
 var carsContainer // cars
+var markerContainer // for the mouse marker
 
 var pathGridContainer // for debug
 
@@ -32,6 +41,21 @@ var getTile = function (x, y) {
     return null
   }
   return tiles[y][x]
+}
+
+var getGridXY = function (screenX, screenY) {
+  var gridX = Math.floor(normalizeRange.limit(
+      0,
+      columnCount,
+      screenX / TILE_SIZE))
+  var gridY = Math.floor(normalizeRange.limit(
+      0,
+      TILE_SIZE * rowCount,
+      screenY / TILE_SIZE))
+  return {
+    x: gridX,
+    y: gridY,
+  }
 }
 
 var isTileTerrainOfType = function (tile, terrainType) {
@@ -214,6 +238,7 @@ var gameScene = {
     tileContainer = new PIXI.Container()
     carsContainer = new PIXI.Container()
     pathGridContainer = new PIXI.Container()
+    markerContainer = new PIXI.Container()
 
     // layer order
     worldContainer.addChild(tileContainer)
@@ -221,6 +246,7 @@ var gameScene = {
     worldContainer.addChild(carsContainer)
 
     container.addChild(worldContainer)
+    container.addChild(markerContainer)
 
     global.baseStage.addChild(container)
 
@@ -348,6 +374,30 @@ var gameScene = {
         }
       }.bind(car))
     }
+
+    // set up mouse marker
+    markerSprite = new PIXI.Sprite(PIXI.loader.resources['marker'].texture)
+
+    var inputArea = new PIXI.Sprite(PIXI.Texture.EMPTY)
+    inputArea.width = VIEW_WIDTH
+    inputArea.height = VIEW_HEIGHT
+    inputArea.interactive = true
+    inputArea.on('mousemove', function (event) {
+      var gridPosition = getGridXY(event.data.global.x, event.data.global.y)
+
+      markerSprite.x = gridPosition.x * TILE_SIZE
+      markerSprite.y = gridPosition.y * TILE_SIZE
+    })
+    inputArea.on('click', function (event) {
+      var gridPosition = getGridXY(event.data.global.x, event.data.global.y)
+
+      tiles[gridPosition.y][gridPosition.x].container.alpha = 0.5 // TODO: something vettigt
+    })
+
+
+    markerContainer.addChild(markerSprite)
+    markerContainer.addChild(inputArea)
+
 
   },
   destroy: function () {
