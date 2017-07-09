@@ -24,7 +24,7 @@ var VIEW_WIDTH = columnCount * TILE_SIZE
 var VIEW_HEIGHT = rowCount * TILE_SIZE
 
 // people
-var people
+window.people = null
 
 // pathfinder
 var easystar
@@ -417,7 +417,7 @@ var gameScene = {
           zone: null,
           buildTimeout: null,
           building: null,
-          people: []
+          //people: []
         }
 
         // set tile position
@@ -649,15 +649,19 @@ var gameScene = {
       let tile = person.tile
       // search for a place to go
       if (person.checkingForState === false && !person.destination) {
+        let prematureExit = false
         allTiles((searchTile) => {
+          if (prematureExit) return;
           if (tile === person.homeTile) {
             if (isTileZoneOfType(searchTile, ZONE_I)) {
+              prematureExit = true
               person.checkingForState = true
               person.destination = searchTile
               easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
             }
           } else {
             if (searchTile === person.homeTile) {
+              prematureExit = true
               person.checkingForState = true
               person.destination = searchTile
               easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
@@ -692,7 +696,7 @@ var gameScene = {
           car.path.shift()
           if (car.path.length == 0) {
             carsContainer.removeChild(people[i].car.container)
-            people[i].destination.people.push(people[i])
+            //people[i].destination.people.push(people[i])
             people[i].tile = people[i].destination
             people[i].car = null
             people[i].destination = null
@@ -717,7 +721,7 @@ var gameScene = {
           tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
 
           if (zone === ZONE_R) {
-            tile.people = []
+            //tile.people = []
 
             // people definition
             let moverIn = {
@@ -727,8 +731,9 @@ var gameScene = {
               car: null,
               tile: tile
             }
+            console.log(tile)
             people.push(moverIn)
-            tile.people.push(moverIn)
+            //tile.people.push(moverIn)
           }
         }
       }
@@ -754,7 +759,7 @@ function addCar(path, tile, searchTile, person) {
     person.destination = null
   } else {
     person.tile = null
-    tile.people = []
+    //tile.people = []
     var car = {
       x: tile.x * 2,
       y: (tile.y * 2) + 2,
