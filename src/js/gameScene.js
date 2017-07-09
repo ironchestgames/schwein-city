@@ -441,6 +441,7 @@ var gameScene = {
           y: r,
           terrain: terrain,
           container: new PIXI.Container(),
+          warning: new PIXI.Container(),
           zone: null,
           buildTimeout: null,
           building: null,
@@ -454,7 +455,14 @@ var gameScene = {
         // set tile offset
         tile.container.y += -TILE_SIZE
 
+        var no_path_icon = new PIXI.Sprite(PIXI.loader.resources['no_path_warning_icon'].texture)
+        no_path_icon.x = tile.x * TILE_SIZE
+        no_path_icon.y = tile.y * TILE_SIZE
+        no_path_icon.visible = false
+        tile.warning.addChild(no_path_icon)
+
         tileContainer.addChild(tile.container)
+        tileContainer.addChild(tile.warning)
 
         tiles[r].unshift(tile) // NOTE: ...but still have the tiles in correct order left-to-right
       }
@@ -893,8 +901,12 @@ var gameScene = {
           if (person.timer === null)
             console.error("Set a timer ya dingus")
 
+          let tile = tiles[person.currentTileR][person.currentTileC]
+
           person.timer -= dt
+          tile.warning.children[0].visible = true
           if (person.timer < 0) {
+            tile.warning.children[0].visible = false
             person.timer = null
             person.state = (person.currentTileC === person.homeTileC && person.currentTileR === person.homeTileR) ?
               PEOPLE_GO_TO_WORK : PEOPLE_GO_HOME;
