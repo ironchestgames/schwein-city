@@ -19,12 +19,12 @@ var BUILDING_R_01 = 'BUILDING_R_01'
 var BUILDING_C_01 = 'BUILDING_C_01'
 var BUILDING_I_01 = 'BUILDING_I_01'
 
+// people
+var people
+
 // camera
 var VIEW_WIDTH = columnCount * TILE_SIZE
 var VIEW_HEIGHT = rowCount * TILE_SIZE
-
-// people
-window.people = null
 
 // pathfinder
 var easystar
@@ -401,9 +401,6 @@ var gameScene = {
     // create the tiles
     tiles = []
 
-    // create the people
-    people = []
-
     for (var r = 0; r < rowCount; r++) {
       tiles[r] = []
 
@@ -421,7 +418,6 @@ var gameScene = {
           zone: null,
           buildTimeout: null,
           building: null,
-          //people: []
         }
 
         // set tile position
@@ -436,6 +432,10 @@ var gameScene = {
         tiles[r].unshift(tile) // NOTE: ...but still have the tiles in correct order left-to-right
       }
     }
+
+    // create the people
+    people = []
+    window.people = people // NOTE: for debugging
 
     // init easystar
     easystar = new Easystarjs.js()
@@ -662,9 +662,16 @@ var gameScene = {
 
     easystar.calculate()
 
-    // calulate people
+    // update people
     for (var i = 0; i < people.length; i++) {
+
       let person = people[i]
+
+      // decide state
+
+
+      // execute state
+
       let tile = person.tile
       // search for a place to go
       if (person.checkingForState === false && !person.destination) {
@@ -740,7 +747,6 @@ var gameScene = {
           tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources[resource].texture))
 
           if (zone === ZONE_R) {
-            //tile.people = []
 
             // people definition
             let moverIn = {
@@ -752,7 +758,6 @@ var gameScene = {
             }
             console.log(tile)
             people.push(moverIn)
-            //tile.people.push(moverIn)
           }
         }
       }
@@ -766,30 +771,6 @@ var gameScene = {
       calcTile(tile, ZONE_C, BUILDING_C_01, ['sc_commercials_01', 'sc_commercials_02', 'sc_commercials_03'][randomInteger(2)])
       calcTile(tile, ZONE_I, BUILDING_I_01, ['sc_industry_01', 'sc_industry_02', 'sc_industry_03', 'sc_industry_04', 'sc_industry_05'][randomInteger(4)])
 
-      // calculate people
-      if (tile.people && (tile.people.length > 0)) {
-        for (let i = 0; i < tile.people.length ; i++) {
-          let person = tile.people[i]
-          if (person.checkingForState) return;
-
-          allTiles((searchTile) => {
-            if (tile === person.homeTile) {
-              if (isTileZoneOfType(searchTile, ZONE_I)) {
-                person.checkingForState = true
-                person.destination = searchTile
-                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
-              }
-            } else {
-              if (searchTile === person.homeTile) {
-                person.checkingForState = true
-                person.destination = searchTile
-                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
-              }
-            }
-
-          })
-        }
-      }
     })
   },
   draw: function () {
