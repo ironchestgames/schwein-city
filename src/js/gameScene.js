@@ -78,8 +78,8 @@ var getGridXY = function (screenX, screenY) {
 }
 
 var allTiles = function(_func) {
-  for (var i = 0; i < tiles.length -1; i++) {
-    for (var j = 0; j < tiles[i].length-1; j++) {
+  for (var i = 0; i < tiles.length; i++) {
+    for (var j = 0; j < tiles[i].length; j++) {
       _func(tiles[i][j])
     }
   }
