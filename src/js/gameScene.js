@@ -8,7 +8,7 @@ var TILE_SIZE = 32
 var tiles
 
 var rowCount = 768 / TILE_SIZE
-var columnCount = 1024 / TILE_SIZE
+var columnCount = 1024 / TILE_SIZE - 2
 
 var ZONE_R = 'ZONE_R'
 var ZONE_C = 'ZONE_C'
@@ -325,7 +325,6 @@ var gameScene = {
     pathGridContainer.visible = false
 
     // create the tiles
-    var roadtiles = ['0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', ]
     tiles = []
 
     for (var r = 0; r < rowCount; r++) {
@@ -336,10 +335,6 @@ var gameScene = {
 
         var terrain = gameVars.TERRAIN_FOREST
         var texture = new PIXI.Sprite(PIXI.loader.resources['forest_1'].texture)
-        if (roadtiles.includes(c + '_' + r)) {
-          terrain = gameVars.TERRAIN_ROAD
-          texture = new PIXI.Sprite(PIXI.loader.resources['road'].texture)
-        }
 
         var tile = {
           x: c,
@@ -420,45 +415,45 @@ var gameScene = {
     cars = []
 
     // add cars NOTE: test
-    for (var i = 0; i < 3; i++) {
-      var car = {
-        // x: randomInteger(0, columnCount * 2 - 1),
-        // y: randomInteger(0, rowCount * 2 - 1),
-        // targetX: randomInteger(0, columnCount * 2 - 1),
-        // targetY: randomInteger(0, rowCount * 2 - 1),
-        x: 0,
-        y: 0,
-        targetX: 1,
-        targetY: 4,
-        speed: 0.5 + randomInteger(1, 10) / 10,
-        container: new PIXI.Container(),
-      }
+    // for (var i = 0; i < 3; i++) {
+    //   var car = {
+    //     // x: randomInteger(0, columnCount * 2 - 1),
+    //     // y: randomInteger(0, rowCount * 2 - 1),
+    //     // targetX: randomInteger(0, columnCount * 2 - 1),
+    //     // targetY: randomInteger(0, rowCount * 2 - 1),
+    //     x: 0,
+    //     y: 0,
+    //     targetX: 1,
+    //     targetY: 4,
+    //     speed: 0.5 + randomInteger(1, 10) / 10,
+    //     container: new PIXI.Container(),
+    //   }
 
-      var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
-      sprite.x = -sprite.width / 2
-      sprite.y = -sprite.height / 2
+    //   var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
+    //   sprite.x = -sprite.width / 2
+    //   sprite.y = -sprite.height / 2
 
-      car.container.x = car.x / 2 * TILE_SIZE
-      car.container.y = car.y / 2 * TILE_SIZE
+    //   car.container.x = car.x / 2 * TILE_SIZE
+    //   car.container.y = car.y / 2 * TILE_SIZE
 
-      car.container.addChild(sprite)
+    //   car.container.addChild(sprite)
 
-      cars.push(car)
+    //   cars.push(car)
 
-      carsContainer.addChild(car.container)
-    }
+    //   carsContainer.addChild(car.container)
+    // }
 
     // cars test
-    for (var i = 0; i < cars.length; i++) {
-      var car = cars[i]
-      easystar.findPath(car.x, car.y, car.targetX, car.targetY, function(path) {
-        if (path !== null) {
-          this.path = path
-        } else {
-          console.log('NO PATH')
-        }
-      }.bind(car))
-    }
+    // for (var i = 0; i < cars.length; i++) {
+    //   var car = cars[i]
+    //   easystar.findPath(car.x, car.y, car.targetX, car.targetY, function(path) {
+    //     if (path !== null) {
+    //       this.path = path
+    //     } else {
+    //       console.log('NO PATH')
+    //     }
+    //   }.bind(car))
+    // }
 
     // set up mouse marker
     markerSprite = new PIXI.Sprite(PIXI.loader.resources['marker'].texture)
@@ -477,7 +472,8 @@ var gameScene = {
       var gridPosition = getGridXY(event.data.global.x, event.data.global.y)
       var tile = tiles[gridPosition.y][gridPosition.x]
 
-console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
+      // console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
+
       if (selectedTool == BUTTON_R) {
         tile.zone = ZONE_R
         tile.container.removeChildren()
@@ -528,8 +524,13 @@ console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
     markerContainer.addChild(inputArea)
 
     // set up tools window
+    var toolbarBg = new PIXI.Sprite(PIXI.loader.resources['toolbarbg'].texture)
+    toolbarBg.y = -TILE_SIZE / 4
+    toolsWindowContainer.addChild(toolbarBg)
+
     var buttonR = new PIXI.Sprite(PIXI.loader.resources['buttonR'].texture)
     buttonR.interactive = true
+    buttonR.x = 4
     buttonR.on('click', function (event) {
       selectedTool = BUTTON_R
     })
@@ -537,6 +538,7 @@ console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
 
     var buttonC = new PIXI.Sprite(PIXI.loader.resources['buttonC'].texture)
     buttonC.interactive = true
+    buttonC.x = 4
     buttonC.y = buttonC.height
     buttonC.on('click', function (event) {
       selectedTool = BUTTON_C
@@ -545,6 +547,7 @@ console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
 
     var buttonI = new PIXI.Sprite(PIXI.loader.resources['buttonI'].texture)
     buttonI.interactive = true
+    buttonI.x = 4
     buttonI.y = buttonI.height * 2
     buttonI.on('click', function (event) {
       selectedTool = BUTTON_I
@@ -553,13 +556,14 @@ console.log(gridPosition.x, gridPosition.y, selectedTool, tile)
 
     var buttonRoad = new PIXI.Sprite(PIXI.loader.resources['buttonRoad'].texture)
     buttonRoad.interactive = true
+    buttonRoad.x = 4
     buttonRoad.y = buttonRoad.height * 3
     buttonRoad.on('click', function (event) {
       selectedTool = BUTTON_ROAD
     })
     toolsWindowContainer.addChild(buttonRoad)
 
-    toolsWindowContainer.x = 550
+    toolsWindowContainer.x = 1024 - TILE_SIZE * 2
 
 
   },

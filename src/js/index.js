@@ -14,7 +14,7 @@ var setUpGameRenderer = function () {
 
   // init pixi renderer
   var noWebgl = !!localStorage.getItem('vars:noWebgl')
-  var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, noWebgl)
+  var renderer = PIXI.autoDetectRenderer(1024, 768, {}, noWebgl)
   document.body.appendChild(renderer.view)
   renderer.backgroundColor = 0x115511
 

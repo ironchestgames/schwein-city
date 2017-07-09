@@ -7,6 +7,7 @@ var loadingScene = {
     // fetch assets
     PIXI.loader
 
+    .add('toolbarbg', 'assets/images/toolbarbg.png')
     .add('marker', 'assets/images/marker.png')
     .add('buttonR', 'assets/images/buttonR.png')
     .add('buttonC', 'assets/images/buttonC.png')
