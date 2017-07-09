@@ -603,6 +603,16 @@ var gameScene = {
               tile.zone = ZONE_R
               tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_residents'].texture))
 
+            } else if (presetValue === 'C') {
+              let tile = tiles[r][c]
+              tile.zone = ZONE_C
+              tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_commercial'].texture))
+
+            } else if (presetValue === 'I') {
+              let tile = tiles[r][c]
+              tile.zone = ZONE_I
+              tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_industry'].texture))
+
             }
           }
         }
