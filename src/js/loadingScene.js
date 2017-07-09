@@ -17,6 +17,8 @@ var loadingScene = {
 
     .add('bg', 'assets/images/sc_map.png')
 
+    .add('no_path_warning_icon', 'assets/images/no_path_warning_icon.png')
+
     .add('sc_car_01', 'assets/images/sc_car_01.png')
     .add('sc_car_02', 'assets/images/sc_car_02.png')
     .add('sc_car_03', 'assets/images/sc_car_03.png')
