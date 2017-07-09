@@ -23,8 +23,8 @@ var BUILDING_I_01 = 'BUILDING_I_01'
 var VIEW_WIDTH = columnCount * TILE_SIZE
 var VIEW_HEIGHT = rowCount * TILE_SIZE
 
-// cars
-var cars
+// people
+var people
 
 // pathfinder
 var easystar
@@ -378,15 +378,19 @@ var gameScene = {
 
     global.baseStage.addChild(container)
 
+
     // offset the cars
     carsContainer.x = TILE_SIZE / 4
     carsContainer.y = TILE_SIZE / 4
 
     // debug things
-    pathGridContainer.visible = !false
+    pathGridContainer.visible = false
 
     // create the tiles
     tiles = []
+
+    // create the people
+    people = []
 
     for (var r = 0; r < rowCount; r++) {
       tiles[r] = []
@@ -405,7 +409,7 @@ var gameScene = {
           zone: null,
           buildTimeout: null,
           building: null,
-          people: null
+          people: []
         }
 
         // set tile position
@@ -472,9 +476,6 @@ var gameScene = {
     easystar.setAcceptableTiles([gameVars.TERRAIN_ROAD])
     easystar.setTileCost(gameVars.TERRAIN_ROAD, 1)
     easystar.setIterationsPerCalculation(1000)
-
-    // create cars
-    cars = []
 
     // set up mouse marker
     markerSprite = new PIXI.Sprite(PIXI.loader.resources['marker'].texture)
@@ -626,48 +627,6 @@ var gameScene = {
       }
     }
     easystar.setGrid(easystarGrid)
-
-    // add cars NOTE: test
-    /*for (var i = 0; i < 3; i++) {
-      var car = {
-        // x: randomInteger(0, columnCount * 2 - 1),
-        // y: randomInteger(0, rowCount * 2 - 1),
-        // targetX: randomInteger(0, columnCount * 2 - 1),
-        // targetY: randomInteger(0, rowCount * 2 - 1),
-        x: 0,
-        y: 0,
-        targetX: 1,
-        targetY: 1,
-        speed: 0.5 + randomInteger(1, 10) / 10,
-        container: new PIXI.Container(),
-      }
-
-      var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
-      sprite.x = -sprite.width / 2
-      sprite.y = -sprite.height / 2
-
-      car.container.x = car.x / 2 * TILE_SIZE
-      car.container.y = car.y / 2 * TILE_SIZE
-
-      car.container.addChild(sprite)
-
-      cars.push(car)
-
-      carsContainer.addChild(car.container)
-    }
-
-    // cars test
-    for (var i = 0; i < cars.length; i++) {
-      var car = cars[i]
-      easystar.findPath(car.x, car.y, car.targetX, car.targetY, function(path) {
-        if (path !== null) {
-          this.path = path
-        } else {
-          console.log('NO PATH')
-        }
-      }.bind(car))
-    }*/
-
   },
   destroy: function () {
     container.destroy()
@@ -676,11 +635,10 @@ var gameScene = {
 
     easystar.calculate()
 
-    // move cars
-    for (var i = 0; i < cars.length; i++) {
-      var car = cars[i]
-
-      if (car.path && car.path.length) {
+    // calulate people
+    for (var i = 0; i < people.length; i++) {
+      let car = people[i].car
+      if (car && car.path && car.path.length) {
         var nextTileInPath = car.path[0]
         var speed = car.speed
 
@@ -693,8 +651,6 @@ var gameScene = {
         // car.y += Math.sin(angle) * speed
 
         // update car image
-        // car.container.x = Math.round(car.x)
-        // car.container.y = Math.round(car.y)
         car.container.x += Math.cos(angle) * speed
         car.container.y += Math.sin(angle) * speed
         car.container.rotation = angle
@@ -705,8 +661,11 @@ var gameScene = {
         if (distance < speed * 2) {
           car.path.shift()
           if (car.path.length == 0) {
-            cars = []
-            //kurt
+            carsContainer.removeChild(people[i].car.container)
+            //carsContainer.removeChildren()
+            people[i].destination.people.push(people[i])
+            people[i].car = null
+            people[i].destination = null
           }
         }
       }
@@ -731,11 +690,14 @@ var gameScene = {
             tile.people = []
 
             // people definition
-            tile.people.push({
+            let moverIn = {
               homeTile: tile,
               happiness: 0,
-              checkingForState: false
-            })
+              checkingForState: false,
+              car: null
+            }
+            people.push(moverIn)
+            tile.people.push(moverIn)
           }
         }
       }
@@ -752,13 +714,14 @@ var gameScene = {
       // calculate people
       if (tile.people && (tile.people.length > 0)) {
         for (let i = 0; i < tile.people.length ; i++) {
-          if (tile.people[i].checkingForState) return;
+          let person = tile.people[i]
+          if (person.checkingForState) return;
 
           allTiles((searchTile) => {
             if (isTileZoneOfType(searchTile, ZONE_I)) {
-              tile.people[i].checkingForState = true
-              tile.people[i].destination = searchTile
-              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile) })
+              person.checkingForState = true
+              person.destination = searchTile
+              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
             }
           })
         }
@@ -770,8 +733,10 @@ var gameScene = {
   },
 }
 
-function addCar(path, tile, searchTile) {
+function addCar(path, tile, searchTile, person) {
   if (path !== null) {
+    person.checkingForState = false
+
     tile.people = []
     var car = {
       x: tile.x * 2,
@@ -782,6 +747,7 @@ function addCar(path, tile, searchTile) {
       container: new PIXI.Container(),
       path: path
     }
+    person.car = car
     var sprite = new PIXI.Sprite(PIXI.loader.resources['sc_car_01'].texture)
     sprite.x = -sprite.width / 2
     sprite.y = -sprite.height / 2
@@ -790,8 +756,6 @@ function addCar(path, tile, searchTile) {
     car.container.y = car.y / 2 * TILE_SIZE
 
     car.container.addChild(sprite)
-
-    cars.push(car)
 
     carsContainer.addChild(car.container)
   }
