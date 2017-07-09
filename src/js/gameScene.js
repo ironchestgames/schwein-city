@@ -718,11 +718,20 @@ var gameScene = {
           if (person.checkingForState) return;
 
           allTiles((searchTile) => {
-            if (isTileZoneOfType(searchTile, ZONE_I)) {
-              person.checkingForState = true
-              person.destination = searchTile
-              easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
+            if (tile === person.homeTile) {
+              if (isTileZoneOfType(searchTile, ZONE_I)) {
+                person.checkingForState = true
+                person.destination = searchTile
+                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
+              }
+            } else {
+              if (searchTile === person.homeTile) {
+                person.checkingForState = true
+                person.destination = searchTile
+                easystar.findPath(tile.x * 2, (tile.y * 2) + 2, (searchTile.x * 2), (searchTile.y * 2) + 2, (path) => { addCar(path, tile, searchTile, person) })
+              }
             }
+
           })
         }
       }
