@@ -413,7 +413,7 @@ var gameScene = {
     easystar.setGrid(easystarGrid)
     easystar.setAcceptableTiles([gameVars.TERRAIN_ROAD])
     easystar.setTileCost(gameVars.TERRAIN_ROAD, 1)
-    easystar.setIterationsPerCalculation(global.loop.getFps()) // TODO: why fps???
+    easystar.setIterationsPerCalculation(1000)
 
     // create cars
     cars = []
