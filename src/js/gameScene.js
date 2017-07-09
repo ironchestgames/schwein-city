@@ -22,6 +22,8 @@ var BUILDING_R_01 = 'BUILDING_R_01'
 var BUILDING_C_01 = 'BUILDING_C_01'
 var BUILDING_I_01 = 'BUILDING_I_01'
 
+var MAX_LATEST_PATHS = 7
+
 // people
 var people
 
@@ -597,8 +599,19 @@ var gameScene = {
         console.log('Tile', tile)
 
         // add the path
+        let pathColors = [
+          0xdf7126,
+          0x37946e,
+          0x5b6ee1,
+          0xd95763,
+          0x76428a,
+          0x8f563b,
+          0xd77bba,
+        ]
         for (let i = 0; i < tile.latestPaths.length; i++) {
           let pathObject = tile.latestPaths[i]
+          let pathColor = pathColors.shift() // NOTE: relaying on max latest paths
+
           for (let j = 0; j < pathObject.path.length; j++) {
 
             // draw dot
@@ -608,6 +621,7 @@ var gameScene = {
             sprite.anchor.y = 0.5
             sprite.x = point.x / 2 * TILE_SIZE
             sprite.y = point.y / 2 * TILE_SIZE
+            sprite.tint = pathColor
             latestPathsContainer.addChild(sprite)
 
             // draw edge to next dot
@@ -619,6 +633,7 @@ var gameScene = {
               sprite.rotation = angle
               sprite.x = point.x / 2 * TILE_SIZE
               sprite.y = point.y / 2 * TILE_SIZE
+              sprite.tint = pathColor
               latestPathsContainer.addChild(sprite)
             }
           }
@@ -759,7 +774,7 @@ var gameScene = {
             })
 
             // keep the array at a reasonable length
-            while (departureTile.latestPaths.length > 5) {
+            while (departureTile.latestPaths.length > MAX_LATEST_PATHS) {
               departureTile.latestPaths.pop()
             }
 
