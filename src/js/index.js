@@ -87,6 +87,14 @@ windowLoad(function () {
     global.loop.start()
 
   }, 100)
-  
+
+
+  var audio = new Audio('assets/schwien_city_01.ogg');
+  audio.addEventListener('ended', function() {
+      this.currentTime = 0;
+      this.play();
+  }, false);
+  audio.play();
+
 })
 
