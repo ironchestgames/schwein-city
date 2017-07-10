@@ -9,7 +9,7 @@
     "create-dist-dirs": "mkdir -p dist/js && mkdir -p dist/assets/images",
     "copy-assets": "cp -r assets/* dist/assets/",
     "prebuild": "rm -rf dist/ && npm run create-dist-dirs && npm run copy-assets && cp src/index.html dist/index.html",
-    "build": "browserify src/js/index.js -u src/js/DebugConsole.js -o dist/js/bundle.js",
+    "build": "browserify src/js/index.js -o dist/js/bundle.js",
     "build:gh": "npm run build && rm -rf docs && mkdir -p docs && cp -r dist/* docs/",
     "export:version-js": "ver=`node -pe \"require('./package.json').version\"` && echo \"module.exports = \\\"$ver\"\\\" > src/js/version.js",
     "dev": "beefy src/js/index.js:js/bundle.js 1234 --index=src/index.html",

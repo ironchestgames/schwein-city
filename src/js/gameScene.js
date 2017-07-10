@@ -748,12 +748,12 @@ var gameScene = {
     })
     toolsWindowContainer.addChild(buttonSelection)
 
-    var bnpLabel = new PIXI.Text("BNP:", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
+    var bnpLabel = new PIXI.Text("BNP:", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8})
     bnpLabel.x = 5
     bnpLabel.y = buttonSelection.height * 6
     toolsWindowContainer.addChild(bnpLabel)
 
-    bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
+    bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
     bnpText.x = 5
     bnpText.y = buttonSelection.height * 6 + 10
     toolsWindowContainer.addChild(bnpText)
