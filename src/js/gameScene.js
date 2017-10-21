@@ -460,20 +460,20 @@ var gameScene = {
           y: r,
           terrain: terrain,
           container: new PIXI.Container(),
-          warning: new PIXI.Container(),
+          warningContainer: new PIXI.Container(),
           zone: null,
           buildTimeout: null,
           building: null,
           latestPaths: [],
           averageArrivalTiredness: null,
           commercialCount: null,
-          tier1: null,
-          tier2: null,
-          tier3: null,
-          tier4: null,
-          tier5: null,
-          tier6: null,
-          tier7: null
+          tier1Sprite: null,
+          tier2Sprite: null,
+          tier3Sprite: null,
+          tier4Sprite: null,
+          tier5Sprite: null,
+          tier6Sprite: null,
+          tier7Sprite: null
         }
 
         // set tile position
@@ -487,10 +487,10 @@ var gameScene = {
         no_path_icon.x = tile.x * TILE_SIZE
         no_path_icon.y = tile.y * TILE_SIZE
         no_path_icon.visible = false
-        tile.warning.addChild(no_path_icon)
+        tile.warningContainer.addChild(no_path_icon)
 
         tileContainer.addChild(tile.container)
-        tileContainer.addChild(tile.warning)
+        tileContainer.addChild(tile.warningContainer)
 
         tiles[r].unshift(tile) // NOTE: ...but still have the tiles in correct order left-to-right
       }
@@ -1037,9 +1037,9 @@ var gameScene = {
           let tile = tiles[person.currentTileR][person.currentTileC]
 
           person.timer -= dt
-          tile.warning.children[0].visible = true
+          tile.warningContainer.children[0].visible = true
           if (person.timer < 0) {
-            tile.warning.children[0].visible = false
+            tile.warningContainer.children[0].visible = false
             person.timer = null
             person.state = (person.currentTileC === person.homeTileC && person.currentTileR === person.homeTileR) ?
               PEOPLE_GO_TO_WORK : PEOPLE_GO_HOME;
@@ -1096,26 +1096,26 @@ function countCommercialInArea(tile) {
     }
   }
   let modifier = getCommercialModifier(count)
-  if (tile.tier1) {
-    tile.tier1.visible = false
-    tile.tier2.visible = false
-    tile.tier3.visible = false
-    tile.tier4.visible = false
-    tile.tier5.visible = false
-    tile.tier6.visible = false
-    tile.tier7.visible = false
+  if (tile.tier1Sprite) {
+    tile.tier1Sprite.visible = false
+    tile.tier2Sprite.visible = false
+    tile.tier3Sprite.visible = false
+    tile.tier4Sprite.visible = false
+    tile.tier5Sprite.visible = false
+    tile.tier6Sprite.visible = false
+    tile.tier7Sprite.visible = false
     if (modifier === 1) {
-      tile.tier1.visible = true
+      tile.tier1Sprite.visible = true
     } else if (modifier === 4) {
-      tile.tier2.visible = true
+      tile.tier2Sprite.visible = true
     } else if (modifier === 10) {
-      tile.tier3.visible = true
+      tile.tier3Sprite.visible = true
     } else if (modifier === 20) {
-      tile.tier5.visible = true
+      tile.tier5Sprite.visible = true
     } else if (modifier === 25) {
-      tile.tier6.visible = true
+      tile.tier6Sprite.visible = true
     } else if (modifier > 25) {
-      tile.tier7.visible = true
+      tile.tier7Sprite.visible = true
     }
   }
   tile.commercialCount = count
@@ -1150,22 +1150,22 @@ function calcTile(tile, zone, building, resource) {
       tile.building = building
       tile.container.removeChildren()
 
-      tile.tier1 = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
-      tile.container.addChild(tile.tier1)
+      tile.tier1Sprite = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
+      tile.container.addChild(tile.tier1Sprite)
 
       if (zone === ZONE_R) {
-        tile.tier2 = new PIXI.Sprite(PIXI.loader.resources['sc_house_small_03'].texture)
-        tile.tier3 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
-        tile.tier4 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
-        tile.tier5 = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
-        tile.tier6 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_06'].texture)
-        tile.tier7 = new PIXI.Sprite(PIXI.loader.resources['sc_residental_05'].texture)
-        tile.container.addChild(tile.tier2)
-        tile.container.addChild(tile.tier3)
-        tile.container.addChild(tile.tier4)
-        tile.container.addChild(tile.tier5)
-        tile.container.addChild(tile.tier6)
-        tile.container.addChild(tile.tier7)
+        tile.tier2Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_small_03'].texture)
+        tile.tier3Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
+        tile.tier4Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
+        tile.tier5Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
+        tile.tier6Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_residental_06'].texture)
+        tile.tier7Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_residental_05'].texture)
+        tile.container.addChild(tile.tier2Sprite)
+        tile.container.addChild(tile.tier3Sprite)
+        tile.container.addChild(tile.tier4Sprite)
+        tile.container.addChild(tile.tier5Sprite)
+        tile.container.addChild(tile.tier6Sprite)
+        tile.container.addChild(tile.tier7Sprite)
       }
 
 
