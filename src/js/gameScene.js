@@ -79,6 +79,8 @@ var toolsWindowContainer // tools, like RCI and road buttons
 // Pixi handles for updating graphics
 var bnpText
 
+var bnpPerMinuteText
+
 var pathGridContainer // for debug
 
 var getTile = function (x, y) {
@@ -501,7 +503,7 @@ var gameScene = {
     window.people = people // NOTE: for debugging
     window.tiles = tiles
 
-    // init pnp
+    // init bnp
     bnp = 0.0
 
     // init easystar
@@ -775,8 +777,13 @@ var gameScene = {
 
     bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
     bnpText.x = 5
-    bnpText.y = buttonSelection.height * 6 + 10
+    bnpText.y = buttonSelection.height * 6 + 12
     toolsWindowContainer.addChild(bnpText)
+
+    bnpPerMinuteText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0x2bce1c})
+    bnpPerMinuteText.x = 5
+    bnpPerMinuteText.y = buttonSelection.height * 6 + 24
+    toolsWindowContainer.addChild(bnpPerMinuteText)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
 
@@ -827,6 +834,9 @@ var gameScene = {
     container.destroy()
   },
   update: function (dt) {
+
+    // Store old bnp for later calcs
+    bnpBeforeUpdate = bnp
 
     easystar.calculate()
 
@@ -1075,9 +1085,14 @@ var gameScene = {
 
     // Global BNP deduction
     bnp = Math.max(0, bnp - BNP_GLOBAL_DEDUCTION)
+    const bnpDiff = bnp - bnpBeforeUpdate
 
     // Update BNP text
     bnpText.text = (Math.round(bnp * 100) / 100)
+
+    bnpPerMinuteText.style.fill = (bnpDiff < 0) ? 0xc64a41 : 0x2bce1c;
+    const prependText = (bnpDiff < 0) ? "" : "+";
+    bnpPerMinuteText.text = prependText + (Math.round(bnpDiff * 100000) / 100000)
   },
   draw: function () {
     global.renderer.render(container)
