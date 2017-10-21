@@ -9,7 +9,7 @@ var presetMap = require('./presetMap')
 const BNP_GLOBAL_DEDUCTION = 0.001
 const BNP_WORKER_ADDITION = 0.004
 
-const DRIVING_FATIQUE_MULTIPLIER = 0.1
+const DRIVING_FATIGUE_MULTIPLIER = 0.1
 const REST_RECOVERY_MULTIPLIER = 0.4
 const WORK_TIREDNESS_MULTIPLIER = 0.4
 
@@ -564,13 +564,17 @@ var gameScene = {
       // unmark old marked tile
       // TODO: less assuming of the children
       if (markedTile && markedTile !== tile && markedTile.container && markedTile.container.children[0]) {
-        markedTile.container.children[0].tint = 0xffffff // reset tint
+        for (let i = 0; i < markedTile.container.children.length; i++) {
+          markedTile.container.children[i].tint = 0xffffff // NOTE: reset tint
+        }
       }
 
       // mark new tile
       markedTile = tile
       if (markedTile.building || markedTile.terrain === gameVars.TERRAIN_ROAD) {
-        markedTile.container.children[0].tint = 0xffff00
+        for (let i = 0; i < markedTile.container.children.length; i++) {
+          markedTile.container.children[i].tint = 0xffff00
+        }
       }
     })
     inputArea.on('click', function (event) {
@@ -923,7 +927,7 @@ var gameScene = {
           break
 
         case PEOPLE_DRIVING:
-          person.values.tiredness += dt * DRIVING_FATIQUE_MULTIPLIER
+          person.values.tiredness += dt * DRIVING_FATIGUE_MULTIPLIER
 
           let car = person.car
           var nextTileInPath = car.path[0]
