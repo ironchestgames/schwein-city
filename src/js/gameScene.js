@@ -715,8 +715,11 @@ var gameScene = {
 
     // set up tools window
     var toolbarBg = new PIXI.Sprite(PIXI.loader.resources['toolbarbg'].texture)
-    toolbarBg.y = -TILE_SIZE / 4
     toolsWindowContainer.addChild(toolbarBg)
+
+    var toolButtonContainer = new PIXI.Container()
+    toolButtonContainer.y = 60
+    toolsWindowContainer.addChild(toolButtonContainer)
 
     var buttonR = new PIXI.Sprite(PIXI.loader.resources['buttonR'].texture)
     buttonR.interactive = true
@@ -724,7 +727,7 @@ var gameScene = {
     buttonR.on('click', function (event) {
       selectedTool = BUTTON_R
     })
-    toolsWindowContainer.addChild(buttonR)
+    toolButtonContainer.addChild(buttonR)
 
     var buttonC = new PIXI.Sprite(PIXI.loader.resources['buttonC'].texture)
     buttonC.interactive = true
@@ -733,7 +736,7 @@ var gameScene = {
     buttonC.on('click', function (event) {
       selectedTool = BUTTON_C
     })
-    toolsWindowContainer.addChild(buttonC)
+    toolButtonContainer.addChild(buttonC)
 
     var buttonI = new PIXI.Sprite(PIXI.loader.resources['buttonI'].texture)
     buttonI.interactive = true
@@ -742,7 +745,7 @@ var gameScene = {
     buttonI.on('click', function (event) {
       selectedTool = BUTTON_I
     })
-    toolsWindowContainer.addChild(buttonI)
+    toolButtonContainer.addChild(buttonI)
 
     var buttonRoad = new PIXI.Sprite(PIXI.loader.resources['buttonRoad'].texture)
     buttonRoad.interactive = true
@@ -751,7 +754,7 @@ var gameScene = {
     buttonRoad.on('click', function (event) {
       selectedTool = BUTTON_ROAD
     })
-    toolsWindowContainer.addChild(buttonRoad)
+    toolButtonContainer.addChild(buttonRoad)
 
     var buttonRemoveRoad = new PIXI.Sprite(PIXI.loader.resources['buttonRemoveRoad'].texture)
     buttonRemoveRoad.interactive = true
@@ -760,7 +763,7 @@ var gameScene = {
     buttonRemoveRoad.on('click', function (event) {
       selectedTool = BUTTON_REMOVE_ROAD
     })
-    toolsWindowContainer.addChild(buttonRemoveRoad)
+    toolButtonContainer.addChild(buttonRemoveRoad)
 
     var buttonSelection = new PIXI.Sprite(PIXI.loader.resources['buttonSelection'].texture)
     buttonSelection.interactive = true
@@ -768,22 +771,22 @@ var gameScene = {
     buttonSelection.on('click', function (event) {
       selectedTool = BUTTON_SELECTION
     })
-    toolsWindowContainer.addChild(buttonSelection)
+    toolButtonContainer.addChild(buttonSelection)
 
-    var bnpLabel = new PIXI.Text("BNP:", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8})
+    var bnpLabel = new PIXI.Text("BNP:", {fontFamily : 'Helvetica', fontSize: 10, fill : 0x000000})
     bnpLabel.x = 5
     bnpLabel.y = buttonSelection.height * 6
-    toolsWindowContainer.addChild(bnpLabel)
+    toolButtonContainer.addChild(bnpLabel)
 
-    bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0xf8f8f8 })
+    bnpText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0x000000 })
     bnpText.x = 5
     bnpText.y = buttonSelection.height * 6 + 12
-    toolsWindowContainer.addChild(bnpText)
+    toolButtonContainer.addChild(bnpText)
 
     bnpPerMinuteText = new PIXI.Text("-", {fontFamily : 'Helvetica', fontSize: 10, fill : 0x2bce1c})
     bnpPerMinuteText.x = 5
     bnpPerMinuteText.y = buttonSelection.height * 6 + 24
-    toolsWindowContainer.addChild(bnpPerMinuteText)
+    toolButtonContainer.addChild(bnpPerMinuteText)
 
     toolsWindowContainer.x = 1024 - TILE_SIZE * 2
 
