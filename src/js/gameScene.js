@@ -106,6 +106,16 @@ var getGridXY = function (screenX, screenY) {
   }
 }
 
+var isScreenXYInsideGrid = function (screenX, screenY) {
+  var gridX = screenX / TILE_SIZE
+  var gridY = screenY / TILE_SIZE
+
+  if (gridX < 0 || gridX >= columnCount || gridY < 0 || gridY >= rowCount) {
+    return false
+  }
+  return true
+}
+
 var allTiles = function(_func) {
   for (var i = 0; i < tiles.length; i++) {
     for (var j = 0; j < tiles[i].length; j++) {
@@ -554,7 +564,13 @@ var gameScene = {
     inputArea.height = VIEW_HEIGHT
     inputArea.interactive = true
     inputArea.on('mousemove', function (event) {
-      var gridPosition = getGridXY(event.data.global.x, event.data.global.y)
+      var mouseX = event.data.global.x
+      var mouseY = event.data.global.y
+      if (isScreenXYInsideGrid(mouseX, mouseY) == false) {
+        // TODO: hide marker and reset tint
+        return
+      }
+      var gridPosition = getGridXY(mouseX, mouseY)
 
       markerSprite.x = gridPosition.x * TILE_SIZE
       markerSprite.y = gridPosition.y * TILE_SIZE
@@ -563,7 +579,7 @@ var gameScene = {
 
       // unmark old marked tile
       // TODO: less assuming of the children
-      if (markedTile && markedTile !== tile && markedTile.container && markedTile.container.children[0]) {
+      if (markedTile && markedTile !== tile && markedTile.container && markedTile.container.children.length) {
         for (let i = 0; i < markedTile.container.children.length; i++) {
           markedTile.container.children[i].tint = 0xffffff // NOTE: reset tint
         }
