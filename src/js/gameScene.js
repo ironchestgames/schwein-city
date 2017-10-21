@@ -93,6 +93,53 @@ var getTile = function (x, y) {
   return tiles[y][x]
 }
 
+var calcTilePathEntrance = function (tile) {
+  var adjacentTile
+  var c = tile.x
+  var r = tile.y
+
+  adjacentTile = getTile(c, r + 1)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      return {
+        x: c * 2 + 1,
+        y: r * 2 + 2,
+      }
+    }
+  }
+
+  adjacentTile = getTile(c - 1, r)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      return {
+        x: c * 2 - 1,
+        y: r * 2 + 1,
+      }
+    }
+  }
+
+  adjacentTile = getTile(c, r - 1)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      return {
+        x: c * 2,
+        y: r * 2 - 1,
+      }
+    }
+  }
+
+  adjacentTile = getTile(c + 1, r)
+  if (adjacentTile) {
+    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+      return {
+        x: c * 2 + 2,
+        y: r * 2,
+      }
+    }
+  }
+
+}
+
 var getGridXY = function (screenX, screenY) {
   var gridX = Math.floor(normalizeRange.limit(
       0,
@@ -611,6 +658,7 @@ var gameScene = {
         tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_residents'].texture))
+        tile.pathEntrance = calcTilePathEntrance(tile)
 
         updateAdjacentTiles(tile)
 
@@ -630,6 +678,7 @@ var gameScene = {
         tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_industry'].texture))
+        tile.pathEntrance = calcTilePathEntrance(tile)
 
         updateAdjacentTiles(tile)
 
@@ -891,33 +940,37 @@ var gameScene = {
 
         case PEOPLE_GO_HOME:
           person.state = PEOPLE_FINDING_PATH
+          let currentTileEntrance = getTile(person.currentTileC, person.currentTileR).pathEntrance
+          let homeTileEntrance = getTile(person.homeTileC, person.homeTileR).pathEntrance
           person.wantedDestinationTileC = person.homeTileC
           person.wantedDestinationTileR = person.homeTileR
           easystar.findPath(
-              person.currentTileC * 2,
-              person.currentTileR * 2 + 2,
-              person.homeTileC * 2,
-              person.homeTileR * 2 + 2,
+              currentTileEntrance.x,
+              currentTileEntrance.y,
+              homeTileEntrance.x,
+              homeTileEntrance.y,
               pathCallback)
           break
 
         case PEOPLE_GO_TO_WORK:
           if (person.hasWorkplace === true) {
 
-            // no building on tile find new workplace
+            // no building on tile, find another workplace
             if (getTile(person.workplaceTileC, person.workplaceTileR).building === null) {
               person.hasWorkplace = false
               person.state = PEOPLE_FIND_WORKPLACE
 
             } else {
               person.state = PEOPLE_FINDING_PATH
+              let currentTileEntrance = getTile(person.currentTileC, person.currentTileR).pathEntrance
+              let workplaceTileEntrance = getTile(person.workplaceTileC, person.workplaceTileR).pathEntrance
               person.wantedDestinationTileC = person.workplaceTileC
               person.wantedDestinationTileR = person.workplaceTileR
               easystar.findPath(
-                  person.currentTileC * 2,
-                  person.currentTileR * 2 + 2,
-                  person.workplaceTileC * 2,
-                  person.workplaceTileR * 2 + 2,
+                  currentTileEntrance.x,
+                  currentTileEntrance.y,
+                  workplaceTileEntrance.x,
+                  workplaceTileEntrance.y,
                   pathCallback)
             }
 
@@ -1221,8 +1274,8 @@ function createCar(path, tileC, tileR, carModel) {
 
   // car definition
   var car = {
-    x: tileC * 2,
-    y: (tileR * 2) + 2,
+    x: path[0].x,
+    y: path[0].y,
     speed: 1.2 + Math.random() * 0.2,
     container: new PIXI.Container(),
     path: path
