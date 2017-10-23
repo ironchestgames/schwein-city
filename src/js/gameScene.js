@@ -763,62 +763,85 @@ var gameScene = {
     inputContainer.addChild(inputArea)
 
     // set up tools window
-    var toolbarBg = new PIXI.Sprite(PIXI.loader.resources['toolbarbg'].texture)
-    toolsWindowContainer.addChild(toolbarBg)
+    var toolbarLogo = new PIXI.Sprite(PIXI.loader.resources['toolbar_logo'].texture)
+    toolsWindowContainer.addChild(toolbarLogo)
 
     var toolButtonContainer = new PIXI.Container()
-    toolButtonContainer.y = 60
+    toolButtonContainer.y = toolbarLogo.height
     toolsWindowContainer.addChild(toolButtonContainer)
 
-    var buttonR = new PIXI.Sprite(PIXI.loader.resources['buttonR'].texture)
+    var selectTool = function (buttonConstant, buttonSprite) {
+
+      // deselect all buttons
+      buttonR.texture = PIXI.loader.resources['toolbar_residental_inactiv'].texture
+      buttonC.texture = PIXI.loader.resources['toolbar_commercials_inactiv'].texture
+      buttonI.texture = PIXI.loader.resources['toolbar_industry_inactiv'].texture
+      buttonRoad.texture = PIXI.loader.resources['toolbar_roads_inactiv'].texture
+      buttonRemoveRoad.texture = PIXI.loader.resources['toolbar_bulldozer_inactiv'].texture
+      buttonSelection.texture = PIXI.loader.resources['toolbar_information_inactiv'].texture
+
+      // select the clicked button
+      if (buttonConstant === BUTTON_R) {
+        buttonR.texture = PIXI.loader.resources['toolbar_residental_activ'].texture
+      } else if (buttonConstant === BUTTON_C) {
+        buttonC.texture = PIXI.loader.resources['toolbar_commercials_activ'].texture
+      } else if (buttonConstant === BUTTON_I) {
+        buttonI.texture = PIXI.loader.resources['toolbar_industry_activ'].texture
+      } else if (buttonConstant === BUTTON_ROAD) {
+        buttonRoad.texture = PIXI.loader.resources['toolbar_roads_activ'].texture
+      } else if (buttonConstant === BUTTON_REMOVE_ROAD) {
+        buttonRemoveRoad.texture = PIXI.loader.resources['toolbar_bulldozer_activ'].texture
+      } else if (buttonConstant === BUTTON_SELECTION) {
+        buttonSelection.texture = PIXI.loader.resources['toolbar_information_activ'].texture
+      }
+
+      selectedTool = buttonConstant
+    }
+
+    var buttonR = new PIXI.Sprite(PIXI.loader.resources['toolbar_residental_inactiv'].texture)
     buttonR.interactive = true
-    buttonR.x = 4
     buttonR.on('click', function (event) {
-      selectedTool = BUTTON_R
+      selectTool(BUTTON_R, buttonR)
     })
     toolButtonContainer.addChild(buttonR)
 
-    var buttonC = new PIXI.Sprite(PIXI.loader.resources['buttonC'].texture)
+    var buttonC = new PIXI.Sprite(PIXI.loader.resources['toolbar_commercials_inactiv'].texture)
     buttonC.interactive = true
-    buttonC.x = 4
     buttonC.y = buttonC.height
     buttonC.on('click', function (event) {
-      selectedTool = BUTTON_C
+      selectTool(BUTTON_C, buttonC)
     })
     toolButtonContainer.addChild(buttonC)
 
-    var buttonI = new PIXI.Sprite(PIXI.loader.resources['buttonI'].texture)
+    var buttonI = new PIXI.Sprite(PIXI.loader.resources['toolbar_industry_inactiv'].texture)
     buttonI.interactive = true
-    buttonI.x = 4
     buttonI.y = buttonI.height * 2
     buttonI.on('click', function (event) {
-      selectedTool = BUTTON_I
+      selectTool(BUTTON_I, buttonI)
     })
     toolButtonContainer.addChild(buttonI)
 
-    var buttonRoad = new PIXI.Sprite(PIXI.loader.resources['buttonRoad'].texture)
+    var buttonRoad = new PIXI.Sprite(PIXI.loader.resources['toolbar_roads_inactiv'].texture)
     buttonRoad.interactive = true
-    buttonRoad.x = 4
     buttonRoad.y = buttonRoad.height * 3
     buttonRoad.on('click', function (event) {
-      selectedTool = BUTTON_ROAD
+      selectTool(BUTTON_ROAD, buttonRoad)
     })
     toolButtonContainer.addChild(buttonRoad)
 
-    var buttonRemoveRoad = new PIXI.Sprite(PIXI.loader.resources['buttonRemoveRoad'].texture)
+    var buttonRemoveRoad = new PIXI.Sprite(PIXI.loader.resources['toolbar_bulldozer_inactiv'].texture)
     buttonRemoveRoad.interactive = true
-    buttonRemoveRoad.x = 4
     buttonRemoveRoad.y = buttonRemoveRoad.height * 4
     buttonRemoveRoad.on('click', function (event) {
-      selectedTool = BUTTON_REMOVE_ROAD
+      selectTool(BUTTON_REMOVE_ROAD, buttonRemoveRoad)
     })
     toolButtonContainer.addChild(buttonRemoveRoad)
 
-    var buttonSelection = new PIXI.Sprite(PIXI.loader.resources['buttonSelection'].texture)
+    var buttonSelection = new PIXI.Sprite(PIXI.loader.resources['toolbar_information_inactiv'].texture)
     buttonSelection.interactive = true
     buttonSelection.y = buttonSelection.height * 5
     buttonSelection.on('click', function (event) {
-      selectedTool = BUTTON_SELECTION
+      selectTool(BUTTON_SELECTION, buttonSelection)
     })
     toolButtonContainer.addChild(buttonSelection)
 

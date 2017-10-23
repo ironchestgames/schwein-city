@@ -7,9 +7,23 @@ var loadingScene = {
     // fetch assets
     PIXI.loader
 
-    .add('toolbarbg', 'assets/images/sc_toolbarbg.png')
     .add('marker', 'assets/images/marker.png')
-    .add('buttonR', 'assets/images/buttonR.png')
+
+    // toolbar assets
+    .add('toolbar_logo', 'assets/images/toolbar_logo.png')
+    .add('toolbar_residental_activ', 'assets/images/toolbar_residental_activ.png')
+    .add('toolbar_residental_inactiv', 'assets/images/toolbar_residental_inactiv.png')
+    .add('toolbar_commercials_activ', 'assets/images/toolbar_commercials_activ.png')
+    .add('toolbar_commercials_inactiv', 'assets/images/toolbar_commercials_inactiv.png')
+    .add('toolbar_industry_activ', 'assets/images/toolbar_industry_activ.png')
+    .add('toolbar_industry_inactiv', 'assets/images/toolbar_industry_inactiv.png')
+    .add('toolbar_roads_activ', 'assets/images/toolbar_roads_activ.png')
+    .add('toolbar_roads_inactiv', 'assets/images/toolbar_roads_inactiv.png')
+    .add('toolbar_information_activ', 'assets/images/toolbar_information_activ.png')
+    .add('toolbar_information_inactiv', 'assets/images/toolbar_information_inactiv.png')
+    .add('toolbar_bulldozer_activ', 'assets/images/toolbar_bulldozer_activ.png')
+    .add('toolbar_bulldozer_inactiv', 'assets/images/toolbar_bulldozer_inactiv.png')
+    
     .add('buttonC', 'assets/images/buttonC.png')
     .add('buttonI', 'assets/images/buttonI.png')
     .add('buttonSelection', 'assets/images/buttonSelection.png')
