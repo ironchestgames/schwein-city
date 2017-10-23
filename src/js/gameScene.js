@@ -917,7 +917,7 @@ var gameScene = {
 
     easystar.calculate()
 
-    // update people
+    // update people/cars
     for (var i = 0; i < people.length; i++) {
 
       let person = people[i]
@@ -1042,6 +1042,7 @@ var gameScene = {
           // calc speed
           var speed = car.speed
 
+          // move slower when a lot of trafic
           for (let j = 0; j < people.length; j++) {
             let otherPerson = people[j]
             if (otherPerson !== person && otherPerson.car !== null) {
@@ -1056,13 +1057,11 @@ var gameScene = {
 
           speed = normalizeRange.limit(0.1, car.speed, speed)
 
+          // calc angle and position delta
           var dx = nextTileInPath.x / 2 * TILE_SIZE - car.container.x
           var dy = nextTileInPath.y / 2 * TILE_SIZE - car.container.y
 
           var angle = Math.atan2(dy, dx)
-
-          // car.x += Math.cos(angle) * speed
-          // car.y += Math.sin(angle) * speed
 
           // update car image
           car.container.x += Math.cos(angle) * speed
@@ -1098,12 +1097,12 @@ var gameScene = {
               // if building is gone
               } else {
 
-                // remove person if no home
+                // home gone, remove person
                 if (getTile(person.homeTileC, person.homeTileR).building === null) {
                   person.removeMe = true
                 }
 
-                // no workplace, find new workplace
+                // workplace gone, go home
                 if (getTile(person.workplaceTileC, person.workplaceTileR).building === null) {
                   person.hasWorkplace = false
                   person.state = PEOPLE_GO_HOME
