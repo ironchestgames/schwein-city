@@ -1042,26 +1042,30 @@ var gameScene = {
           // calc speed
           var speed = car.speed
 
-          // move slower when a lot of trafic
-          for (let j = 0; j < people.length; j++) {
-            let otherPerson = people[j]
-            if (otherPerson !== person && otherPerson.car !== null) {
-              let dx = otherPerson.car.container.x - car.container.x
-              let dy = otherPerson.car.container.y - car.container.y
-              let distance = Math.sqrt(dx * dx + dy * dy)
-              if (distance < TILE_SIZE * 0.65) {
-                speed *= 0.84
-              }
-            }
-          }
-
-          speed = normalizeRange.limit(0.1, car.speed, speed)
-
           // calc angle and position delta
           var dx = nextTileInPath.x / 2 * TILE_SIZE - car.container.x
           var dy = nextTileInPath.y / 2 * TILE_SIZE - car.container.y
 
           var angle = Math.atan2(dy, dx)
+
+          // move cars not upon each other
+          var carFrontPoint = car.frontPoint.toGlobal(new PIXI.Point(0, 0))
+          for (let j = 0; j < people.length; j++) {
+            let otherPerson = people[j]
+            if (otherPerson !== person && otherPerson.car !== null) {
+
+              // calc other back to car front distance
+              let otherPersonBackPoint = otherPerson.car.backPoint.toGlobal(new PIXI.Point(0, 0))
+              let dx = otherPersonBackPoint.x - carFrontPoint.x
+              let dy = otherPersonBackPoint.y - carFrontPoint.y
+              let backToFrontDistance = Math.sqrt(dx * dx + dy * dy)
+
+              // find car in front and slow down
+              if (backToFrontDistance < car.touchRadius + otherPerson.car.touchRadius) {
+                speed = car.speed * 0.1 // NOTE: * 0.1 because solves deadlock in crossroads and double spawns
+              }
+            }
+          }
 
           // update car image
           car.container.x += Math.cos(angle) * speed
@@ -1300,7 +1304,7 @@ function createCar(path, tileC, tileR, carModel) {
   var car = {
     x: path[0].x,
     y: path[0].y,
-    speed: 1.2 + Math.random() * 0.2,
+    speed: 1.1 + Math.random() * 0.4,
     container: new PIXI.Container(),
     path: path
   }
@@ -1322,10 +1326,24 @@ function createCar(path, tileC, tileR, carModel) {
   sprite.x = -sprite.width / 2
   sprite.y = -sprite.height / 2
 
+  car.touchRadius = sprite.height / 2
+
+  var frontPoint = new PIXI.Sprite(PIXI.Texture.EMPTY)
+  frontPoint.x = sprite.x + sprite.width * 0.75
+  frontPoint.y = sprite.y + sprite.height / 2
+  car.frontPoint = frontPoint
+
+  var backPoint = new PIXI.Sprite(PIXI.Texture.EMPTY)
+  backPoint.x = sprite.x + sprite.width * 0.25
+  backPoint.y = sprite.y + sprite.height / 2
+  car.backPoint = backPoint
+
   car.container.x = car.x / 2 * TILE_SIZE
   car.container.y = car.y / 2 * TILE_SIZE
 
   car.container.addChild(sprite)
+  car.container.addChild(frontPoint)
+  car.container.addChild(backPoint)
 
   carsContainer.addChild(car.container)
 
