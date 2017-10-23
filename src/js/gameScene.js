@@ -138,6 +138,7 @@ var calcTilePathEntrance = function (tile) {
     }
   }
 
+  return null
 }
 
 var getGridXY = function (screenX, screenY) {
@@ -415,31 +416,32 @@ var updateAdjacentTiles = function (tile) {
   var c = tile.x
   var r = tile.y
 
-  var adjacentTile = getTile(c + 1, r)
-  if (adjacentTile) {
-    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-      updateRoadTile(adjacentTile)
+  var adjacentTiles = [
+    getTile(c + 1, r),
+    getTile(c, r + 1),
+    getTile(c - 1, r),
+    getTile(c, r - 1),
+  ]
+
+  // update adjacent road tiles
+  for (var i = 0; i < adjacentTiles.length; i++) {
+    var adjacentTile = adjacentTiles[i]
+    if (adjacentTile) {
+      if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
+        updateRoadTile(adjacentTile)
+      }
     }
   }
 
-  adjacentTile = getTile(c, r + 1)
-  if (adjacentTile) {
-    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-      updateRoadTile(adjacentTile)
-    }
-  }
-
-  adjacentTile = getTile(c - 1, r)
-  if (adjacentTile) {
-    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-      updateRoadTile(adjacentTile)
-    }
-  }
-
-  adjacentTile = getTile(c, r - 1)
-  if (adjacentTile) {
-    if (isTileTerrainOfType(adjacentTile, gameVars.TERRAIN_ROAD)) {
-      updateRoadTile(adjacentTile)
+  // update adjacent tiles path entrances (if needed)
+  if (tile.terrain === gameVars.TERRAIN_ROAD) {
+    for (var i = 0; i < adjacentTiles.length; i++) {
+      var adjacentTile = adjacentTiles[i]
+      if ((adjacentTile.zone === ZONE_R || adjacentTile.zone === ZONE_I) &&
+          adjacentTile.building &&
+          adjacentTile.pathEntrance === null) {
+        adjacentTile.pathEntrance = calcTilePathEntrance(adjacentTile)
+      }
     }
   }
 }
