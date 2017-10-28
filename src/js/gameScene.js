@@ -1189,7 +1189,7 @@ function countCommercialInArea(tile) {
   let count = 0
   for (let c = tile.x - 4; c <= tile.x + 4; c++) {
     for (let r = tile.y - 4; r <= tile.y + 4; r++) {
-      if (tiles[r] && tiles[r][c] && tiles[r][c].zone === ZONE_C) {
+      if (tiles[r] && tiles[r][c] && tiles[r][c].zone === ZONE_C && tiles[r][c].building) {
         count++
       }
     }
@@ -1245,30 +1245,26 @@ function calcTile(tile, zone, building, resource) {
       tile.buildTimeout--
     }
     if (tile.buildTimeout <= 0) {
-      tile.buildTimeout = null
-      tile.building = building
-      tile.container.removeChildren()
-
-      tile.tier1Sprite = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
-      tile.container.addChild(tile.tier1Sprite)
 
       if (zone === ZONE_R) {
+        tile.buildTimeout = null
+        tile.building = building
+        tile.container.removeChildren()
+
+        tile.tier1Sprite = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
         tile.tier2Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_small_03'].texture)
         tile.tier3Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_2lev'].texture)
         tile.tier4Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_4lev'].texture)
         tile.tier5Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_house_01_6lev'].texture)
         tile.tier6Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_residental_06'].texture)
         tile.tier7Sprite = new PIXI.Sprite(PIXI.loader.resources['sc_residental_05'].texture)
+        tile.container.addChild(tile.tier1Sprite)
         tile.container.addChild(tile.tier2Sprite)
         tile.container.addChild(tile.tier3Sprite)
         tile.container.addChild(tile.tier4Sprite)
         tile.container.addChild(tile.tier5Sprite)
         tile.container.addChild(tile.tier6Sprite)
         tile.container.addChild(tile.tier7Sprite)
-      }
-
-
-      if (zone === ZONE_R) {
 
         // people definition
         let moverIn = {
@@ -1293,6 +1289,32 @@ function calcTile(tile, zone, building, resource) {
           },
         }
         people.push(moverIn)
+
+      } else if (zone === ZONE_C) {
+
+        // can get entrance (road connection)
+        if (calcTilePathEntrance(tile) !== null) {
+
+          tile.buildTimeout = null
+          tile.building = building
+          tile.container.removeChildren()
+
+          tile.tier1Sprite = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
+          tile.container.addChild(tile.tier1Sprite)
+
+        // no road connection, try again
+        } else {
+          tile.buildTimeout = null
+        }
+
+      } else if (zone === ZONE_I) {
+        tile.buildTimeout = null
+        tile.building = building
+        tile.container.removeChildren()
+
+        tile.tier1Sprite = new PIXI.Sprite(PIXI.loader.resources[resource].texture)
+        tile.container.addChild(tile.tier1Sprite)
+
       }
     }
   }
