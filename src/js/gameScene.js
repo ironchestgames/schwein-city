@@ -8,6 +8,7 @@ var presetMap = require('./presetMap')
 
 const BNP_GLOBAL_DEDUCTION = 0.001
 const BNP_WORKER_ADDITION = 0.004
+const BNP_SHOPPING_ADDITION = 0.0015
 
 const DRIVING_FATIGUE_MULTIPLIER = 0.1
 const REST_RECOVERY_MULTIPLIER = 0.4
@@ -44,6 +45,9 @@ var PEOPLE_WORKING = 'PEOPLE_WORKING'
 var PEOPLE_NO_PATH = 'PEOPLE_NO_PATH'
 var PEOPLE_GO_TO_WORK = 'PEOPLE_GO_TO_WORK'
 var PEOPLE_GO_HOME = 'PEOPLE_GO_HOME'
+var PEOPLE_FIND_SHOP = 'PEOPLE_FIND_SHOP'
+var PEOPLE_GO_TO_SHOP = 'PEOPLE_GO_TO_SHOP'
+var PEOPLE_SHOPPING = 'PEOPLE_SHOPPING'
 
 // camera
 var VIEW_WIDTH = columnCount * TILE_SIZE
@@ -437,7 +441,7 @@ var updateAdjacentTiles = function (tile) {
   if (tile.terrain === gameVars.TERRAIN_ROAD) {
     for (var i = 0; i < adjacentTiles.length; i++) {
       var adjacentTile = adjacentTiles[i]
-      if ((adjacentTile.zone === ZONE_R || adjacentTile.zone === ZONE_I) &&
+      if ((adjacentTile.zone === ZONE_R || adjacentTile.zone === ZONE_I || adjacentTile.zone === ZONE_C) &&
           adjacentTile.building &&
           adjacentTile.pathEntrance === null) {
         adjacentTile.pathEntrance = calcTilePathEntrance(adjacentTile)
@@ -670,6 +674,7 @@ var gameScene = {
         tile.terrain = gameVars.TERRAIN_FOREST
         tile.container.removeChildren()
         tile.container.addChild(new PIXI.Sprite(PIXI.loader.resources['sc_zone_commercial'].texture))
+        tile.pathEntrance = calcTilePathEntrance(tile)
 
         updateAdjacentTiles(tile)
 
@@ -961,6 +966,27 @@ var gameScene = {
           if (person.values.tiredness < 0) {
             person.state = PEOPLE_GO_TO_WORK
           }
+
+          // NOTE: reset shop, to find new one next time
+          person.shoppingTileC = null
+          person.shoppingTileR = null
+
+          break
+
+        case PEOPLE_WORKING:
+          person.values.tiredness += dt * WORK_TIREDNESS_MULTIPLIER
+          bnp = bnp + BNP_WORKER_ADDITION
+          if (person.values.tiredness > 4000) {
+            person.state = PEOPLE_GO_TO_SHOP
+          }
+          break
+
+        case PEOPLE_SHOPPING:
+          person.values.tiredness -= dt * REST_RECOVERY_MULTIPLIER * getCommercialModifier(currentTile.commercialCount)
+          bnp = bnp + BNP_SHOPPING_ADDITION
+          if (person.values.tiredness < 3000) {
+            person.state = PEOPLE_GO_HOME
+          }
           break
 
         case PEOPLE_GO_HOME:
@@ -1004,6 +1030,32 @@ var gameScene = {
           }
           break
 
+        case PEOPLE_GO_TO_SHOP:
+          if (person.shoppingTileC !== null && person.shoppingTileR !== null) {
+
+            // no building on tile, find another shop
+            if (getTile(person.shoppingTileC, person.shoppingTileR).building === null) {
+              person.state = PEOPLE_FIND_SHOP
+
+            } else {
+              person.state = PEOPLE_FINDING_PATH
+              let currentTileEntrance = getTile(person.currentTileC, person.currentTileR).pathEntrance
+              let shoppingTileEntrance = getTile(person.shoppingTileC, person.shoppingTileR).pathEntrance
+              person.wantedDestinationTileC = person.shoppingTileC
+              person.wantedDestinationTileR = person.shoppingTileR
+              easystar.findPath(
+                  currentTileEntrance.x,
+                  currentTileEntrance.y,
+                  shoppingTileEntrance.x,
+                  shoppingTileEntrance.y,
+                  pathCallback)
+            }
+
+          } else {
+            person.state = PEOPLE_FIND_SHOP
+          }
+          break
+
         case PEOPLE_FIND_WORKPLACE:
 
           // find a random workplace
@@ -1026,6 +1078,31 @@ var gameScene = {
 
           // go back to resting
           person.state = PEOPLE_RESTING
+
+          break
+
+        case PEOPLE_FIND_SHOP:
+
+          // find a random shop
+          {
+            let randomRowIndeces = shuffleArray(fillRange(0, tiles.length - 1))
+            let randomColumnIndeces = shuffleArray(fillRange(0, tiles[0].length - 1))
+            loop: for (var i = 0; i < randomRowIndeces.length; i++) {
+              let r = randomRowIndeces[i]
+              for (var j = 0; j < randomColumnIndeces.length; j++) {
+                let c = randomColumnIndeces[j]
+                let tile = tiles[r][c]
+                if (tile.zone === ZONE_C && tile.building != null) {
+                  person.shoppingTileC = c
+                  person.shoppingTileR = r
+                  break loop
+                }
+              }
+            }
+          }
+
+          // go back to working
+          person.state = PEOPLE_WORKING
 
           break
 
@@ -1097,6 +1174,8 @@ var gameScene = {
                 person.state = PEOPLE_WORKING
               } else if (currentTile.building === BUILDING_R_01) {
                 person.state = PEOPLE_RESTING
+              } else if (currentTile.zone === ZONE_C && currentTile.building) {
+                person.state = PEOPLE_SHOPPING
 
               // if building is gone
               } else {
@@ -1111,16 +1190,13 @@ var gameScene = {
                   person.hasWorkplace = false
                   person.state = PEOPLE_GO_HOME
                 }
+
+                // shop gone, go home
+                if (getTile(person.shoppingTileC, person.shoppingTileR).building === null) {
+                  person.state = PEOPLE_GO_HOME
+                }
               }
             }
-          }
-          break
-
-        case PEOPLE_WORKING:
-          person.values.tiredness += dt * WORK_TIREDNESS_MULTIPLIER
-          bnp = bnp + BNP_WORKER_ADDITION
-          if (person.values.tiredness > 4000) {
-            person.state = PEOPLE_GO_HOME
           }
           break
 
@@ -1278,6 +1354,9 @@ function calcTile(tile, zone, building, resource) {
           hasWorkplace: false,
           workplaceTileC: null,
           workplaceTileR: null,
+
+          shoppingTileC: null,
+          shoppingTileR: null,
 
           timer: null,
 
