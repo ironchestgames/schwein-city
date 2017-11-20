@@ -46,6 +46,7 @@ var loadingScene = {
     .add('sc_car_10', 'assets/images/sc_car_10.png')
     .add('sc_car_11', 'assets/images/sc_car_11.png')
 
+    .add('road_temp_path', 'assets/images/road_temp_path.png')
     .add('sc_crossroad_01', 'assets/images/sc_crossroad_01.png')
     .add('sc_crossroad_02', 'assets/images/sc_crossroad_02.png')
     .add('sc_crossroad_03', 'assets/images/sc_crossroad_03.png')

@@ -85,6 +85,7 @@ var roadToolEasystarId
 var container // container of the whole scene
 var worldContainer // the world
 var tileContainer // all tiles
+var roadDrawingContainer // showing where the road would be placed
 var carsContainer // cars
 var markerContainer // for the mouse marker
 var inputContainer // for the invisible input layers
@@ -475,6 +476,8 @@ var buildRoadPath = function (path) {
   }
 
   shouldBuildRoad = false
+
+  roadDrawingContainer.removeChildren()
 }
 
 var gameScene = {
@@ -488,6 +491,7 @@ var gameScene = {
     tileContainer = new PIXI.Container()
     carsContainer = new PIXI.Container()
     pathGridContainer = new PIXI.Container()
+    roadDrawingContainer = new PIXI.Container()
     latestPathsContainer = new PIXI.Container()
     markerContainer = new PIXI.Container()
     inputContainer = new PIXI.Container()
@@ -503,6 +507,7 @@ var gameScene = {
     worldContainer.addChild(markerContainer)
     worldContainer.addChild(terrainContainer)
     worldContainer.addChild(carsContainer)
+    worldContainer.addChild(roadDrawingContainer)
     worldContainer.addChild(latestPathsContainer)
     worldContainer.addChild(tileContainer)
     worldContainer.addChild(pathGridContainer)
@@ -717,7 +722,16 @@ var gameScene = {
             if (shouldBuildRoad === true) {
               buildRoadPath(roadToolPath)
             } else {
-              // TODO: draw this temporary path
+
+              roadDrawingContainer.removeChildren()
+
+              for (let i = 0; i < roadToolPath.length; i++) {
+                let pathPosition = roadToolPath[i]
+                let sprite = new PIXI.Sprite(PIXI.loader.resources['road_temp_path'].texture)
+                sprite.x = pathPosition.x * TILE_SIZE
+                sprite.y = pathPosition.y * TILE_SIZE
+                roadDrawingContainer.addChild(sprite)
+              }
             }
           })
         }
