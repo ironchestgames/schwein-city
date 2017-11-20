@@ -53,9 +53,13 @@ var PEOPLE_SHOPPING = 'PEOPLE_SHOPPING'
 var VIEW_WIDTH = columnCount * TILE_SIZE
 var VIEW_HEIGHT = rowCount * TILE_SIZE
 
-// pathfinder
+// road pathfinding for cars
 var easystar
 var easystarGrid
+
+// tile pathfinding for laying roads
+var tilePathfindingObject
+var tilePathfindingGrid
 
 // marker
 var markedTile
@@ -70,6 +74,12 @@ var BUTTON_REMOVE_ROAD = 'BUTTON_REMOVE_ROAD'
 var BUTTON_SELECTION = 'BUTTON_SELECTION'
 
 var selectedTool // one of the RCI above
+var isRoadToolPathingActive = false // NOTE: determines phases of road tool
+var shouldBuildRoad = false // NOTE: used since pathfinding is async
+var roadToolFirstPosition = {x: 0, y: 0}
+var roadToolSecondPosition = {x: 0, y: 0}
+var roadToolPath = []
+var roadToolEasystarId
 
 // pixi containers
 var container // container of the whole scene
@@ -450,6 +460,23 @@ var updateAdjacentTiles = function (tile) {
   }
 }
 
+var buildRoadPath = function (path) {
+  for (var i = 0; i < path.length; i++) {
+    let pathPosition = path[i]
+    let tile = tiles[pathPosition.y][pathPosition.x]
+    tile.zone = null
+    tile.building = null
+    tile.terrain = gameVars.TERRAIN_ROAD
+    tileContainer.removeChild(tile.container)
+    terrainContainer.addChild(tile.container)
+    updateRoadTile(tile)
+
+    updateAdjacentTiles(tile)
+  }
+
+  shouldBuildRoad = false
+}
+
 var gameScene = {
   name: 'gameScene',
   create: function (sceneParams) {
@@ -611,6 +638,24 @@ var gameScene = {
     easystar.setTileCost(gameVars.TERRAIN_ROAD, 1)
     easystar.setIterationsPerCalculation(1000)
 
+    // set up road laying pathfinding
+    tilePathfindingObject = new Easystarjs.js()
+    tilePathfindingGrid = []
+
+    // create the path grid for road laying pathfinding
+    for (var r = 0; r < rowCount; r++) {
+      tilePathfindingGrid[r] = []
+      for (var c = 0; c < columnCount; c++) {
+        var tile = tiles[r][c]
+        tilePathfindingGrid[r][c] = tile.terrain
+      }
+    }
+
+    // set up pathfinding
+    tilePathfindingObject.setGrid(tilePathfindingGrid)
+    tilePathfindingObject.setAcceptableTiles([gameVars.TERRAIN_FOREST, gameVars.TERRAIN_ROAD])
+    tilePathfindingObject.setIterationsPerCalculation(1000)
+
     // set up mouse marker
     markerSprite = new PIXI.Sprite(PIXI.loader.resources['marker'].texture)
 
@@ -627,25 +672,56 @@ var gameScene = {
       }
       var gridPosition = getGridXY(mouseX, mouseY)
 
-      markerSprite.x = gridPosition.x * TILE_SIZE
-      markerSprite.y = gridPosition.y * TILE_SIZE
+      if (isRoadToolPathingActive === false) {
 
-      let tile = tiles[gridPosition.y][gridPosition.x]
+        markerSprite.x = gridPosition.x * TILE_SIZE
+        markerSprite.y = gridPosition.y * TILE_SIZE
 
-      // unmark old marked tile
-      // TODO: less assuming of the children
-      if (markedTile && markedTile !== tile && markedTile.container && markedTile.container.children.length) {
-        for (let i = 0; i < markedTile.container.children.length; i++) {
-          markedTile.container.children[i].tint = 0xffffff // NOTE: reset tint
+        let tile = tiles[gridPosition.y][gridPosition.x]
+
+        // unmark old marked tile
+        // TODO: less assuming of the children
+        if (markedTile && markedTile !== tile && markedTile.container && markedTile.container.children.length) {
+          for (let i = 0; i < markedTile.container.children.length; i++) {
+            markedTile.container.children[i].tint = 0xffffff // NOTE: reset tint
+          }
         }
-      }
 
-      // mark new tile
-      markedTile = tile
-      if (markedTile.building || markedTile.terrain === gameVars.TERRAIN_ROAD) {
-        for (let i = 0; i < markedTile.container.children.length; i++) {
-          markedTile.container.children[i].tint = 0xffff00
+        // mark new tile
+        markedTile = tile
+        if (markedTile.building || markedTile.terrain === gameVars.TERRAIN_ROAD) {
+          for (let i = 0; i < markedTile.container.children.length; i++) {
+            markedTile.container.children[i].tint = 0xffff00
+          }
         }
+
+      } else if (isRoadToolPathingActive === true) {
+
+        if (roadToolSecondPosition.x !== gridPosition.x ||
+            roadToolSecondPosition.y !== gridPosition.y) {
+
+          roadToolSecondPosition.x = gridPosition.x
+          roadToolSecondPosition.y = gridPosition.y
+
+          // cancel any old pathfinding
+          tilePathfindingObject.cancelPath(roadToolEasystarId)
+
+          // find new path
+          roadToolEasystarId = tilePathfindingObject.findPath(
+          roadToolFirstPosition.x,
+          roadToolFirstPosition.y,
+          roadToolSecondPosition.x,
+          roadToolSecondPosition.y,
+          function (path) {
+            roadToolPath = path
+            if (shouldBuildRoad === true) {
+              buildRoadPath(roadToolPath)
+            } else {
+              // TODO: draw this temporary path
+            }
+          })
+        }
+
       }
     })
     inputArea.on('click', function (event) {
@@ -690,14 +766,24 @@ var gameScene = {
         updateAdjacentTiles(tile)
 
       } else if (selectedTool == BUTTON_ROAD) {
-        tile.zone = null
-        tile.building = null
-        tile.terrain = gameVars.TERRAIN_ROAD
-        tileContainer.removeChild(tile.container)
-        terrainContainer.addChild(tile.container)
-        updateRoadTile(tile)
 
-        updateAdjacentTiles(tile)
+        // first click, start path finding for road drawing
+        if (isRoadToolPathingActive === false) {
+
+          isRoadToolPathingActive = true
+
+          roadToolFirstPosition.x = gridPosition.x
+          roadToolFirstPosition.y = gridPosition.y
+
+        // second click, build road
+        } else if (isRoadToolPathingActive === true) {
+
+          isRoadToolPathingActive = false
+          shouldBuildRoad = true // NOTE: this might seem redundant, but is due to pathfinding async
+
+          buildRoadPath(roadToolPath)
+
+        }
 
       } else if (selectedTool == BUTTON_REMOVE_ROAD) {
         tile.zone = null
@@ -920,7 +1006,9 @@ var gameScene = {
     // Store old bnp for later calcs
     bnpBeforeUpdate = bnp
 
+    // run pathfinding
     easystar.calculate()
+    tilePathfindingObject.calculate()
 
     // update people/cars
     for (var i = 0; i < people.length; i++) {
