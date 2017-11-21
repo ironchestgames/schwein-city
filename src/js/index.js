@@ -89,12 +89,12 @@ windowLoad(function () {
   }, 100)
 
 
-  var audio = new Audio('assets/schwien_city_01.ogg');
-  audio.addEventListener('ended', function() {
-      this.currentTime = 0;
-      this.play();
-  }, false);
-  audio.play();
+  // var audio = new Audio('assets/schwien_city_01.ogg');
+  // audio.addEventListener('ended', function() {
+  //     this.currentTime = 0;
+  //     this.play();
+  // }, false);
+  // audio.play();
 
 })
 
